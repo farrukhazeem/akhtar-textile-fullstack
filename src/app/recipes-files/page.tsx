@@ -9,7 +9,7 @@ import type { RcFile } from 'antd/es/upload/interface';
 const RecipeFiles: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [fileNames, setFileNames] = useState<string[]>([]);
-  const [data, setData] = useState(null)
+  const [data, setData] = useState<any>(null)
 
   const showModal = () => {
     setIsModalOpen(true);
