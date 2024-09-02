@@ -3,15 +3,17 @@ name: Deploy to Vercel
 on:
   push:
     branches:
-      - prod # Adjust to your default branch, e.g., 'master'
+      - prod # Deploy on direct pushes to the 'prod' branch
   pull_request:
+    types: [closed] # Only trigger on pull request closures
     branches:
-      - prod # Adjust to your default branch
+      - prod # Only consider pull requests targeting the 'prod' branch
 
 jobs:
   deploy:
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true) # Ensure deployment only on merge or push
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -33,6 +35,6 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: '--prod' # or use '--preview' for preview deployments
+          vercel-args: '--prod' # Use '--prod' for production deployments
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
