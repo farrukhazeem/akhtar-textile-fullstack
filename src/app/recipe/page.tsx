@@ -5,11 +5,9 @@ import { Modal, Upload, Button, Progress, message, Card, Col, Row } from "antd";
 import { UploadOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import type { RcFile } from 'antd/es/upload/interface';
-import Link from "next/link";
 
 const Recipe: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [fileNames, setFileNames] = useState<string[]>([]);
   const [data, setData] = useState(null)
   const showModal = () => {
     setIsModalOpen(true);
