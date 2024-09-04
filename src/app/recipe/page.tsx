@@ -1,80 +1,88 @@
 "use client";
+import { useEffect, useState } from 'react';
+import { Card, Row, Col, Typography, Spin, Empty } from 'antd';
+import Link from 'next/link';
 
-import React, { useState } from "react";
-import { Modal, Upload, Button, Progress, message, Card, Col, Row } from "antd";
-import { UploadOutlined } from '@ant-design/icons';
-import axios from 'axios';
-import type { RcFile } from 'antd/es/upload/interface';
+const { Title, Text } = Typography;
 
-const Recipe: React.FC = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [data, setData] = useState(null)
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
+interface Recipe {
+  id: number;
+  recipe_name: string;
+  [key: string]: any;
+}
 
-  const handleCancel = () => {
-    setIsModalOpen(false);
+const Recipe = () => {
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  };
+  useEffect(() => {
+    const fetchRecipes = async () => {
+      try {
+        const response = await fetch('/api/getRecipe'); // Adjust API route if needed
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data: Recipe[] = await response.json();
+        setRecipes(data);
+      } catch (error) {
+        setError('Failed to fetch recipes');
+        console.error('Failed to fetch recipes:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleUpload = async (file: RcFile) => {
-    
-    const formData = new FormData();
-    formData.append('files', file);
+    fetchRecipes();
+  }, []);
 
-    try {
-      // Perform the actual file upload
-      const response = await axios.post('http://localhost:8000/uploadfile/', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      setData(response.data)
-      console.log('Server Response:', response.data);
-      message.success('File uploaded successfully');
-      setIsModalOpen(false);
-    } catch (error) {
-      console.error('Error uploading file:', error);
-      message.error('Error uploading file');
-    } 
-  };
+  if (loading) {
+    return (
+      <div style={{ textAlign: 'center', padding: '2rem' }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={{ textAlign: 'center', padding: '2rem' }}>
+        <Title level={4}>Error: {error}</Title>
+      </div>
+    );
+  }
 
   return (
-    <>
-    <div>
+    <div style={{ padding: '2rem' }}>
+      <Title level={1}>Recipes</Title>
+      {recipes.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '2rem' }}>
+          <Empty description="No recipes found" />
+        </div>
+      ) : (
+        <Row gutter={16}>
+          {recipes.map(recipe => (
+            <Col span={8} key={recipe.id}>
+              <Card
+                hoverable
+                cover={<img alt={recipe.name} src="https://via.placeholder.com/300" />} // Placeholder image
+                style={{ marginBottom: '1rem' }}
+              >
+                <Card.Meta
+                  title={recipe.name}
+                  description={
+                    <Link href={`/recipesDetails/${recipe.id}`}>
+                      <Text style={{ color: '#1890ff', textDecoration: 'underline' }}>View Details</Text>
+                    </Link>
+                  }
+                />
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      )}
     </div>
-      <Button type="primary" style={{ backgroundColor: '#797FE7' }} onClick={showModal}>Upload Excel</Button>
-      <Modal
-        title="Upload File"
-        open={isModalOpen}
-        onCancel={handleCancel}
-        footer={null}
-        closeIcon={<Button onClick={handleCancel}>X</Button>}
-      >
-        <Upload
-            customRequest={({ file, onSuccess, onError }) => {
-              const rcFile = file as RcFile;
-
-              handleUpload(rcFile)
-                .then(() => {
-                  console.log("File has been uploaded", rcFile);
-                })
-                .catch((error) => {
-                  onError?.(error);
-                });
-            }}
-            showUploadList={false}
-          >
-          <Button icon={<UploadOutlined />}>Choose Files</Button>
-        </Upload>
-
-
-
-      </Modal>
-
-    </>
   );
 };
 
-export default Recipe ;
+export default Recipe;
