@@ -30,12 +30,13 @@ export async function POST(request: Request) {
             [recipe1.loadSize, recipe1.machineType, recipe1.finish, recipe1.fabric, recipe1.recipe, recipe1.fno, recipe1.fileName]
         );
         const recipeId = result.rows[0].id;
-
+        
         for (const step of steps) {
+            console.log("", step)
             const stepResult = await client.query(
-                `INSERT INTO steps (action, liters, rpm, centigrade, ph, tds, tss, recipesid)
-                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`,
-                [step.action, step.liters, step.rpm, step.centigrade, step.ph, step.tds, step.tss, recipeId]
+                `INSERT INTO steps (action, liters, rpm, centigrade, ph, tds, tss, recipesid, step_no, minutes)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id`,
+                [step.action, step.litres, step.rpm, step.temperature, step.ph, step.tds, step.tss, recipeId, step.step_no, step.minutes]
             );
             const stepId = stepResult.rows[0].id;
 

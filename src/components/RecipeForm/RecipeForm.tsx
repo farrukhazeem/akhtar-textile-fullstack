@@ -141,7 +141,7 @@ const RecipeForm: React.FC = () => {
         const response = await fetch(`/api/getRecipeDetails/${id}`);
         const data = await response.json();
   
-        console.log('Fetched Data:', data);
+        console.log('Fetched Data:', data.steps);
   
         if (response.ok) {
           setRecipe1(data);
@@ -154,19 +154,18 @@ const RecipeForm: React.FC = () => {
             fno: data.fno,
           });
   
-          const stepsMap: { [key: number]: StepData } = {};
-  
+          
           const recipesDataForTable = data.steps.map((step: any, index: number) => ({
             key: index,
+            step: step.step_no, 
             action: step.action,
+            minutes: step.minutes, 
             centigrade: step.centigrade,
             liters: step.liters,
             rpm: step.rpm,
-            chemicals: step.chemicals.map((chemical: any) => ({
-              recipeName: chemical.recipe_name,
-              percentage: chemical.percentage,
-              dosage: chemical.dosage,
-            })),
+            chemicalName: step.chemicals.map((chemical: any) => chemical.chemical_name),
+            percentage: step.chemicals.map((chemical: any) => chemical.percentage),
+            dosage: step.chemicals.map((chemical: any) => chemical.dosage),
           }));
           setTableData(recipesDataForTable)
 
