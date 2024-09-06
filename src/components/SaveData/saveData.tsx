@@ -17,7 +17,7 @@ const SaveData: React.FC<SaveDataProps> = ({ form, tableData, recipe1 }) => {
         ...values,
         fileName: recipe1.file_name,
         steps: tableData.map((step) => {
-          const chemicals = step.chemicalName.map((name, index) => ({
+          const chemicals = step.chemicalName.map((name: string, index: number) => ({
             recipe_name: name,
             percentage: step.percentage[index],
             dosage: step.dosage[index],

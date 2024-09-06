@@ -79,7 +79,7 @@ const RecipeForm: React.FC = () => {
         <InputNumber
           min={0}
           max={100}
-          defaultValue={text[0]}
+          defaultValue={text}
           style={{ width: '100%' }}
         />
       ),
@@ -91,7 +91,7 @@ const RecipeForm: React.FC = () => {
       render: (text) => (
         <InputNumber
           min={0}
-          defaultValue={text[0]}
+          defaultValue={text}
           style={{ width: 60 }}
         />
       ),
@@ -141,15 +141,10 @@ const RecipeForm: React.FC = () => {
         const response = await fetch(`/api/getRecipeDetails/${id}`);
         const data = await response.json();
   
-        // Debugging: Log the fetched data
         console.log('Fetched Data:', data);
   
         if (response.ok) {
           setRecipe1(data);
-
-          console.log(">>>>", data)
-  
-          // Set form values using the fetched recipe data
           form.setFieldsValue({
             loadSize: data.load_size,
             machineType: data.machine_type,
@@ -159,46 +154,22 @@ const RecipeForm: React.FC = () => {
             fno: data.fno,
           });
   
-          // Transform the data to extract steps and their associated chemicals
           const stepsMap: { [key: number]: StepData } = {};
   
-          // Check if data is an array
-          if (Array.isArray(data)) {
-            data.forEach((row: any) => {
-              // Debugging: Log each row being processed
-              console.log('Processing Row:', row);
-  
-              if (!stepsMap[row.step_id]) {
-                stepsMap[row.step_id] = {
-                  key: row.step_id,
-                  step: row.step_id,
-                  action: row.action,
-                  minutes: row.minutes || 0,
-                  liters: row.liters || 0,
-                  rpm: row.rpm || 0,
-                  centigrade: row.centigrade || 0,
-                  chemicalName: [],
-                  percentage: [],
-                  dosage: [],
-                };
-              }
-  
-              // Add the chemical association data to the step
-              stepsMap[row.step_id].chemicalName.push(row.chemical_name);
-              stepsMap[row.step_id].percentage.push(row.percentage);
-              stepsMap[row.step_id].dosage.push(row.dosage);
-            });
-  
-            // Convert the stepsMap to an array for the table
-            const formattedSteps = Object.values(stepsMap);
-  
-            // Debugging: Log the formatted steps
-            console.log('Formatted Steps for Table:', formattedSteps);
-  
-            setTableData(formattedSteps);
-          } else {
-            setError('Data is not in the expected format');
-          }
+          const recipesDataForTable = data.steps.map((step: any, index: number) => ({
+            key: index,
+            action: step.action,
+            centigrade: step.centigrade,
+            liters: step.liters,
+            rpm: step.rpm,
+            chemicals: step.chemicals.map((chemical: any) => ({
+              recipeName: chemical.recipe_name,
+              percentage: chemical.percentage,
+              dosage: chemical.dosage,
+            })),
+          }));
+          setTableData(recipesDataForTable)
+
         } else {
           setError(data.message || 'Error fetching recipe');
         }
@@ -215,7 +186,8 @@ const RecipeForm: React.FC = () => {
       fetchRecipe(id);
     }
   }, [pathname, form]);
-  
+
+  console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", setTableData)
   
   return (
     <div>
@@ -294,12 +266,7 @@ const RecipeForm: React.FC = () => {
           />
         </div>
       </div>
-      <Modal
-        title="Upload Excel File"
-        open={isModalOpen}
-        onCancel={handleCancel}
-        footer={null}
-      >
+      <Modal title="Upload Excel" open={isModalOpen} onCancel={handleCancel} footer={null}>
         <UploadData
           setTableData={setTableData}
           setChemicalOptions={setChemicalOptions}

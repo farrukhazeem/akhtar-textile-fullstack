@@ -347,7 +347,7 @@
 
 
 
-import RecipeForm from "@/components/RecipeForm/RecipeForm";
+import RecipeForm from "../../../components/RecipeForm/RecipeForm";
 const HomePage: React.FC = () => {
   return (
     <div>
