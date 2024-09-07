@@ -38,3 +38,4 @@ jobs:
           vercel-args: '--prod' # Use '--prod' for production deployments
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
