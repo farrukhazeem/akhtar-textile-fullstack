@@ -18,7 +18,7 @@ const UploadData: React.FC<UploadDataProps> = ({ setTableData, setChemicalOption
     formData.append('files', file);
 
     try {
-      const response = await axios.post('http://localhost:8000/uploadfile/', formData, {
+      const response = await axios.post('https://huge-godiva-arsalan-3b36a0a1.koyeb.app/uploadfile/', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
