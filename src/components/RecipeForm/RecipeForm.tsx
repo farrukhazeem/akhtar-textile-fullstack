@@ -251,7 +251,7 @@ const RecipeForm: React.FC = () => {
             <h1 style={{ color: '#343C6A', fontSize: '20px', fontWeight: 'bold' }}>Recipe Steps</h1>
           </Col>
           <Col>
-            <Button type="primary" style={{ backgroundColor: '#797FE7' }} onClick={addStep}>Add Step</Button>
+            <Button type="primary" style={{ backgroundColor: '#797FE7' }} onClick={addStep}>Add Step +</Button>
           </Col>
         </Row>
         <div style={{ padding: '20px', backgroundColor: 'white', borderRadius: '15px' }}>
