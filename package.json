@@ -12,7 +12,7 @@
     "@ant-design/nextjs-registry": "^1.0.1",
     "@prisma/client": "^5.19.1",
     "antd": "^5.20.2",
-    "axios": "^1.7.6",
+    "axios": "^1.7.7",
     "bcryptjs": "^2.4.3",
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",

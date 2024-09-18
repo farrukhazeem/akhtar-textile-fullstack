@@ -1,15 +1,80 @@
 'use client'
 
-import React, { use, useState } from 'react';
+import React, { useState, useReducer, useEffect } from 'react';
 import { Modal, Button, Input } from 'antd';
 import { Col, Row } from "antd";
 import EmployeeForm from '@/components/EmployeeForm/EmployeeForm';
 
+function recordsReducer(state: any, action: any) {
+    switch (action.type) {
+        case 'toggle': { return { ...state, [action.fieldName]: action.payload } }
+        case 'create': {
+            return {
+                ...state,
+                create: true,
+                visible: true,
+            }
+        }
+        case 'edit': {
+            return {
+                ...state,
+                edit: true,
+                visible: true,
+            }
+        }
+        case 'modalOff': {
+            return {
+                ...state,
+                visible: false,
+                create: false,
+                edit: false
+            }
+        }
+        default: return state
+    }
+}
+
+const initialState = {
+    records: [],
+    load: true,
+    visible: false,
+    create: false,
+    edit: false,
 
 
-const Employees = () => {
+};
+
+// interface Users {
+
+//   }
+
+const employees = () => {
+
+    const [state, dispatch] = useReducer(recordsReducer, initialState);
+    const { records, visible } = state;
+    const [users, setUsers] = useState<any>([]);
+
     const [isModalVisible, setIsModalVisible] = useState(false);
-  
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const response = await fetch('/api/getAllUsers');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+
+
+                setUsers(data.users);
+            } catch (error) {
+                console.error('Failed to fetch users:', error);
+            }
+        };
+
+        fetchUsers();
+    }, []);
+
     const showModal = () => {
         setIsModalVisible(true);
     };
@@ -22,7 +87,6 @@ const Employees = () => {
         setIsModalVisible(false);
     };
 
- 
 
     return (
         <div>
@@ -66,43 +130,37 @@ const Employees = () => {
                             </th>
                         </tr>
                     </thead>
+
+
                     <tbody className="bg-white divide-y divide-gray-200">
-                        <tr>
-                            <td className="px-6 py-4 whitespace-nowrap">001</td>
-                            <td className="px-6 py-4 whitespace-nowrap">Farrukh Azeem</td>
-                            <td className="px-6 py-4 whitespace-nowrap">XYZ Corp</td>
-                            <td className="px-6 py-4 whitespace-nowrap">Habib Bank</td>
-                            <td className="px-6 py-4 whitespace-nowrap">Active</td>
-                        </tr>
-                        <tr>
-                            <td className="px-6 py-4 whitespace-nowrap">002</td>
-                            <td className="px-6 py-4 whitespace-nowrap">Saad Khan</td>
-                            <td className="px-6 py-4 whitespace-nowrap">Hail Technologies</td>
-                            <td className="px-6 py-4 whitespace-nowrap">United Bank</td>
-                            <td className="px-6 py-4 whitespace-nowrap">Active</td>
-                        </tr>
-                        <tr>
-                            <td className="px-6 py-4 whitespace-nowrap">003</td>
-                            <td className="px-6 py-4 whitespace-nowrap">Bilal Khan</td>
-                            <td className="px-6 py-4 whitespace-nowrap">Hail Technologies</td>
-                            <td className="px-6 py-4 whitespace-nowrap">United Bank</td>
-                            <td className="px-6 py-4 whitespace-nowrap">Active</td>
-                        </tr>
-                        <tr>
-                            <td className="px-6 py-4 whitespace-nowrap">003</td>
-                            <td className="px-6 py-4 whitespace-nowrap">Farrukh Azeem</td>
-                            <td className="px-6 py-4 whitespace-nowrap">Hail Technologies</td>
-                            <td className="px-6 py-4 whitespace-nowrap">National Bank</td>
-                            <td className="px-6 py-4 whitespace-nowrap">Active</td>
-                        </tr>
-                        {/* Add more rows as needed */}
+                        {users.map((user: any) => (
+                            <tr key={user.id}>
+                                <td className="px-6 py-4 whitespace-nowrap">{user.code}</td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    {`Name: ${user.name}`}<br />
+                                    {`CNIC: ${user.cnic}`}<br />
+                                    {`Department: ${user.department}`}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    {`Designation: ${user.designation}`}<br />
+                                    {`Phone: ${user.phone}`}<br />
+                                    {`Manager: ${user.manager}`}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    {`Bank Name: ${user.bank}`}<br />
+                                    {`Account#: ${user.account}`}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">Active</td>
+                            </tr>
+                        ))}
+
                     </tbody>
                 </table>
             </div>
 
             {/* Modal */}
             <Modal
-                visible={isModalVisible}
+                open={isModalVisible}
                 onCancel={handleCancel}
                 cancelText="Cancel"
                 footer={null}
@@ -111,14 +169,17 @@ const Employees = () => {
             >
                 {/* Add your form fields here */}
                 <h1 className="text-xl font-bold mb-4">Employee Form</h1>
-                <hr className='mb-2'/>
-             
+                <hr className='mb-2' />
+
                 <EmployeeForm />
 
 
             </Modal>
         </div>
-    );
-};
 
-export default Employees;
+    )
+}
+
+
+export default employees
+
