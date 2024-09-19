@@ -186,8 +186,7 @@ const RecipeForm: React.FC = () => {
     }
   }, [pathname, form]);
 
-  console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", setTableData)
-  
+ 
   return (
     <div>
       <Row style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -195,7 +194,7 @@ const RecipeForm: React.FC = () => {
           <h1 style={{ color: '#343C6A', fontSize: "20px", fontWeight: "bold" }}>Recipe Form</h1>
         </Col>
         <Col>
-          <Button type="primary" style={{ backgroundColor: '#797FE7' }} onClick={showModal}>Upload Excel</Button>
+          <Button type="primary" style={{ backgroundColor: '#797FE7', borderRadius: '100px'}} onClick={showModal}>Upload Excel</Button>
         </Col>
       </Row>
       <br />
@@ -251,7 +250,7 @@ const RecipeForm: React.FC = () => {
             <h1 style={{ color: '#343C6A', fontSize: '20px', fontWeight: 'bold' }}>Recipe Steps</h1>
           </Col>
           <Col>
-            <Button type="primary" style={{ backgroundColor: '#797FE7' }} onClick={addStep}>Add Step +</Button>
+            <Button type="primary" style={{ backgroundColor: '#797FE7', color: 'white', borderRadius: '100px' }} onClick={addStep}>Add Step +</Button>
           </Col>
         </Row>
         <div style={{ padding: '20px', backgroundColor: 'white', borderRadius: '15px' }}>

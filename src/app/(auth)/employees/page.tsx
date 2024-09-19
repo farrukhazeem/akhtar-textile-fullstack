@@ -100,8 +100,8 @@ const employees = () => {
                     <Button
                         type="primary"
                         onClick={showModal}
-                        style={{ backgroundColor: '#656ed3', color: '#ffffff' }}
-                        className="px-4 py-2 rounded-sm hover:bg-blue-600 rounded-2xl"
+                        style={{ backgroundColor: '#797FE7',  borderRadius: '100px'}}
+                        className="px-4 py-2"
                     >
                         Create
                     </Button>

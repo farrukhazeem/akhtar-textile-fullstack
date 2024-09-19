@@ -79,15 +79,25 @@ export default function AppSideMenu() {
   };
 
   const menuItems = [
-    { label: <Link href="/dashboard">Dashboard</Link>, key: "2", icon: <HomeOutlined /> },
-    { label: <Link href="/recipe">Recipes</Link>, key: "3", icon: <ReadOutlined /> },
-    { label: <Link href="/upload-recipe">Upload Recipe</Link>, key: "4", icon: <UploadOutlined /> },
-    { label: <Link href="/setup">Setup</Link>, key: "5", icon: <UserOutlined /> },
+    { label: <Link href="/dashboard">Dashboard</Link>,
+       key: "2", icon: <HomeOutlined /> },
+    { label: <Link href="/recipe">Recipes</Link>, 
+      children: [
+   
+        { label: <Link href="/upload-recipe">Upload Recipe</Link>, key: "4", icon: <UploadOutlined /> }],
+      
+      key: "3", icon: <ReadOutlined /> },
+   
+    { label: <Link href="/setup">Setup</Link>, 
+      children: [
+   
+        { label: <Link href="/employees">Employees</Link>, key: "10", icon: <UserOutlined /> }],
+      
+      key: "5", icon: <BulbOutlined /> },
     { label: <Link href="/p-l">P&L</Link>, key: "6", icon: <BarChartOutlined /> },
     { label: <Link href="/damco-data">Damco Data</Link>, key: "7", icon: <DatabaseOutlined /> },
     { label: <Link href="/nexus-data">Nexus Data</Link>, key: "8", icon: <FileOutlined /> },
     { label: <Link href="/privileges">Privileges</Link>, key: "9", icon: <SettingOutlined /> },
-    { label: <Link href="/employees">Employees</Link>, key: "10", icon: <UserOutlined /> },
     { label: <a onClick={handleLogout}>Logout</a>,  key: "11", icon: <SettingOutlined /> },
   ];
 

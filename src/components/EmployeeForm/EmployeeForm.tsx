@@ -20,7 +20,7 @@ const EmployeeForm: React.FC = () => {
               },
               body: JSON.stringify(values),
             });
-            console.log("response",response)
+            // console.log("response",response)
       
             if (response.ok) {
               const result = await response.json();
@@ -127,7 +127,7 @@ const EmployeeForm: React.FC = () => {
      
           <button
                 type="submit"
-                style={{ backgroundColor: '#656ed3', color: '#ffffff' }}
+                style={{ backgroundColor: '#797FE7', color: '#ffffff' ,borderRadius: '100px'}}
                 className="mt-10 px-4 py-2 rounded-sm hover:bg-blue-600 rounded-2xl"
             >
                 Submit
