@@ -5,7 +5,8 @@ import { cookies } from 'next/headers'
 
 const prisma = new PrismaClient()
 
-const JWT_SECRET = process.env.NEXT_PUBLIC_JWT_SECRET as string;
+// const JWT_SECRET = process.env.NEXT_PUBLIC_JWT_SECRET as string;
+const JWT_SECRET = "qwertyuiopasdfghjklzxcvbnmqwertyuiopasdfghjklzxcvbnm" as string;
 interface JwtPayload {
     id: number
     email: string
