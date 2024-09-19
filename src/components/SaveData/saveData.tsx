@@ -49,7 +49,8 @@ const SaveData: React.FC<SaveDataProps> = ({ form, tableData, recipe1 }) => {
   };
 
   return (
-    <Button type="primary" onClick={saveRecipe}>Save Recipe</Button>
+    <Button style={{ backgroundColor: '#797FE7', color: 'white', borderRadius: '100px'}}
+     onClick={saveRecipe}>Save Recipe</Button>
   );
 };
 
