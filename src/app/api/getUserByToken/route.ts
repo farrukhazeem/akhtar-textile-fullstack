@@ -1,17 +1,17 @@
 import { NextResponse,NextRequest } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+// import { PrismaClient } from '@prisma/client'
 import jwt from 'jsonwebtoken'
-import { cookies } from 'next/headers'
+// import { cookies } from 'next/headers'
 
-const prisma = new PrismaClient()
+// const prisma = new PrismaClient()
 
 // const JWT_SECRET = process.env.NEXT_PUBLIC_JWT_SECRET as string;
 const JWT_SECRET = "qwertyuiopasdfghjklzxcvbnmqwertyuiopasdfghjklzxcvbnm" as string;
-interface JwtPayload {
-    id: number
-    email: string
-    role: string
-  }
+// interface JwtPayload {
+//     id: number
+//     email: string
+//     role: string
+//   }
   
   export async function GET() {
     try {
