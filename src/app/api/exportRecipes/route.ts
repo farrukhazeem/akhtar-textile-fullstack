@@ -3,7 +3,7 @@ import { Pool } from 'pg';
 import ExcelJS from 'exceljs';
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: "postgres://akhtar11:9T0NMeQlomBAVtZ4_Q9RlA@grim-oribi-16146.8nj.gcp-europe-west1.cockroachlabs.cloud:26257/dev_db?sslmode=require",
   ssl: {
     rejectUnauthorized: false,
   },

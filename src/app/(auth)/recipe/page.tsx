@@ -37,6 +37,8 @@ const Recipe = () => {
     fetchRecipes();
   }, []);
 
+
+
   // Function to handle export
   const handleExport = async () => {
     try {
@@ -102,7 +104,7 @@ const Recipe = () => {
                 style={{ marginBottom: '1rem' }}
               >
                 <Card.Meta
-                  title={recipe.recipe_name}
+                  title={recipe.name}
                   description={
                     <Link href={`/recipesDetails/${recipe.id}`}>
                       <Text style={{ color: '#797FE7', textDecoration: 'underline' }}>View Details</Text>
