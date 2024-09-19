@@ -25,6 +25,7 @@ function AppHeader() {
       </div>
       <div className="flex items-center gap-2">
         <Avatar size={36} src="img/image.png" />
+        
       </div>
     </Header>
 
