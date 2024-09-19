@@ -61,7 +61,6 @@ export async function GET() {
     headerRow.font = { bold: true };
     headerRow.alignment = { horizontal: 'center', vertical: 'middle' };
 
-    // Apply colors and formatting to header row cells
     headerRow.eachCell({ includeEmpty: true }, (cell, colNumber) => {
       if (colNumber <= 6) { 
         cell.fill = {
@@ -91,33 +90,11 @@ export async function GET() {
     });
 
     recipes.forEach((recipe) => {
-      const initialRowIndex = worksheet.lastRow ? worksheet.lastRow.number + 1 : 1;
-    
-      // Add recipe row
-      worksheet.addRow({
-        recipe_number: recipe.recipe_number,
-        fno: recipe.fno,
-        fabric: recipe.fabric,
-        wash: recipe.wash,
-        active_flag: recipe.active_flag,
-        load_size: recipe.load_size,
-      });
-    
+      // Filter steps related to the current recipe
       const recipeSteps = steps.filter(step => step.recipesid === recipe.id);
+      
       recipeSteps.forEach((step) => {
-        // Add step row
-        worksheet.addRow({
-          action: step.action,
-          liters: step.liters,
-          rpm: step.rpm,
-          centigrade: step.centigrade,
-          ph: step.ph,
-          tds: step.tds,
-          tss: step.tss,
-          minutes: step.minutes,
-          step_no: step.step_no,
-        });
-        
+        // Get chemicals associated with the step
         const stepChemicals = chemicalsAssociation
           .filter(assoc => assoc.stepid === step.id)
           .map(assoc => {
@@ -125,69 +102,99 @@ export async function GET() {
             return {
               chemical_name: chemical ? chemical.name : 'Unknown',
               dosage_percent: assoc.percentage !== null ? assoc.percentage : 'Unknown',
-              dosage: assoc.dosage !== null ? assoc.dosage : 'Unknown'
+              dosage: assoc.dosage !== null ? assoc.dosage : 'Unknown',
             };
           });
-          
+    
+        // Repeat FNO, Fabric, Wash, Active Flag, Load Size, and step details for each chemical
         stepChemicals.forEach((chemical) => {
           worksheet.addRow({
+            recipe_number: recipe.recipe_number,
+            fno: recipe.fno,
+            fabric: recipe.fabric,
+            wash: recipe.wash,
+            active_flag: recipe.active_flag,
+            load_size: recipe.load_size,
+            action: step.action,
+            liters: step.liters,
+            rpm: step.rpm,
+            centigrade: step.centigrade,
+            ph: step.ph,
+            tds: step.tds,
+            tss: step.tss,
+            minutes: step.minutes,
+            step_no: step.step_no,
             chemical_name: chemical.chemical_name,
             dosage_percent: chemical.dosage_percent,
             dosage: chemical.dosage,
           });
         });
+    
+        // If no chemicals are associated, still repeat FNO, Fabric, Wash, Active Flag, and Load Size
+        if (stepChemicals.length === 0) {
+          worksheet.addRow({
+            recipe_number: recipe.recipe_number,
+            fno: recipe.fno,
+            fabric: recipe.fabric,
+            wash: recipe.wash,
+            active_flag: recipe.active_flag,
+            load_size: recipe.load_size,
+            action: step.action,
+            liters: step.liters,
+            rpm: step.rpm,
+            centigrade: step.centigrade,
+            ph: step.ph,
+            tds: step.tds,
+            tss: step.tss,
+            minutes: step.minutes,
+            step_no: step.step_no,
+          });
+        }
       });
     
-
-      const lastRow = worksheet.getRow(worksheet.lastRow.number);
-      for (let col = 1; col <= 20; col++) { 
-        const cell = lastRow.getCell(col);
-        cell.border = {
-          bottom: { style: 'thick', color: { argb: '000000' } },
-        };
-      }
-    
-      // Apply vertical lines to the sections
-      const sectionColumns = [6, 13, 17, 20];
-      sectionColumns.forEach(colNum => {
-        for (let rowNum = initialRowIndex; rowNum <= worksheet.lastRow.number; rowNum++) {
-          const cell = worksheet.getRow(rowNum).getCell(colNum);
+      const lastRow = worksheet.lastRow;
+      if (lastRow) { // Check if lastRow is defined
+        for (let col = 1; col <= 20; col++) {
+          const cell = lastRow.getCell(col);
           cell.border = {
-            right: { style: 'thick', color: { argb: '000000' } },
+            bottom: { style: 'thick', color: { argb: '000000' } },
           };
         }
-      });
-    });
-    
-    
-    worksheet.columns.forEach(column => {
-      let maxLength = 0;
-      column.eachCell({ includeEmpty: true }, (cell) => {
-        const columnLength = cell.value ? cell.value.toString().length : 10;
-        if (columnLength > maxLength) {
-          maxLength = columnLength;
-        }
-      });
-      column.width = maxLength < 10 ? 10 : maxLength;
-      column.alignment = { horizontal: 'center', vertical: 'middle' };
-    });
-    
 
-    // Dynamically set the column widths
+        // Apply vertical lines to the sections
+        const sectionColumns = [6, 13, 17, 20];
+        sectionColumns.forEach(colNum => {
+          for (let rowNum = lastRow.number - recipeSteps.length + 1; rowNum <= lastRow.number; rowNum++) {
+            const row = worksheet.getRow(rowNum);
+            const cell = row.getCell(colNum);
+            cell.border = {
+              right: { style: 'thick', color: { argb: '000000' } },
+            };
+          }
+        });
+      }
+    });    
+    
+    // Ensure the column is defined and has the eachCell method
     worksheet.columns.forEach(column => {
-      let maxLength = 0;
-      column.eachCell({ includeEmpty: true }, (cell) => {
-        const columnLength = cell.value ? cell.value.toString().length : 10;
-        if (columnLength > maxLength) {
-          maxLength = columnLength;
-        }
-      });
-      column.width = maxLength < 10 ? 10 : maxLength;
+      if (column && typeof column.eachCell === 'function') { // Check if column and method exist
+        let maxLength = 0;
+        column.eachCell({ includeEmpty: true }, (cell) => {
+          const columnLength = cell.value ? cell.value.toString().length : 10;
+          if (columnLength > maxLength) {
+            maxLength = columnLength;
+          }
+        });
+        column.width = maxLength < 10 ? 10 : maxLength;
+        column.alignment = { horizontal: 'center', vertical: 'middle' };
+      }
     });
 
     // Apply alignment to all columns
     worksheet.columns.forEach(column => {
-      column.alignment = { horizontal: 'center', vertical: 'middle' };
+      if (column && typeof column.alignment === 'object') { // Check if column and alignment property exist
+        column.alignment = { horizontal: 'center', vertical: 'middle' };
+      }
     });
 
     const buffer = await workbook.xlsx.writeBuffer();
