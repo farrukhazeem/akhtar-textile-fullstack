@@ -1,12 +1,9 @@
 import { NextResponse,NextRequest } from 'next/server'
-// import { PrismaClient } from '@prisma/client'
 import jwt from 'jsonwebtoken'
 // import { cookies } from 'next/headers'
 
-// const prisma = new PrismaClient()
-
 // const JWT_SECRET = process.env.NEXT_PUBLIC_JWT_SECRET as string;
-const JWT_SECRET = "qwertyuiopasdfghjklzxcvbnmqwertyuiopasdfghjklzxcvbnm" as string;
+// const JWT_SECRET = "qwertyuiopasdfghjklzxcvbnmqwertyuiopasdfghjklzxcvbnm" as string;
 // interface JwtPayload {
 //     id: number
 //     email: string
@@ -14,7 +11,7 @@ const JWT_SECRET = "qwertyuiopasdfghjklzxcvbnmqwertyuiopasdfghjklzxcvbnm" as str
 //   }
   
   export async function GET() {
-    try {
+    // try {
       // // Access the cookies using `cookies()` 
       // const cookieStore = cookies()
       // const token = await cookieStore.get('token')?.value
@@ -43,9 +40,9 @@ const JWT_SECRET = "qwertyuiopasdfghjklzxcvbnmqwertyuiopasdfghjklzxcvbnm" as str
       //   return NextResponse.json({ message: 'User not found' }, { status: 404 })
       // }
   
-      return NextResponse.json("user", { status: 200 })
-    } catch (error) {
-      console.error(error)
-      return NextResponse.json({ message: 'Something went wrong' }, { status: 500 })
-    }
+    //   return NextResponse.json("user", { status: 200 })
+    // } catch (error) {
+    //   console.error(error)
+    //   return NextResponse.json({ message: 'Something went wrong' }, { status: 500 })
+    // }
   }
