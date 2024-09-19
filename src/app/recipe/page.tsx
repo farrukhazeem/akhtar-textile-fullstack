@@ -79,9 +79,13 @@ const Recipe = () => {
       {/* Flexbox layout for title and export button */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <Title level={1} style={{ margin: 0 }}>Recipes</Title>
-        <Button type="primary" onClick={handleExport}>
-          Export Data
-        </Button>
+        <Button
+          type="primary"
+          onClick={handleExport}
+          style={{ backgroundColor: '#797FE7', borderColor: '#797FE7' }}
+        >
+        Export Data
+      </Button>
       </div>
       
       {recipes.length === 0 ? (
@@ -101,7 +105,7 @@ const Recipe = () => {
                   title={recipe.recipe_name}
                   description={
                     <Link href={`/recipesDetails/${recipe.id}`}>
-                      <Text style={{ color: '#1890ff', textDecoration: 'underline' }}>View Details</Text>
+                      <Text style={{ color: '#797FE7', textDecoration: 'underline' }}>View Details</Text>
                     </Link>
                   }
                 />
