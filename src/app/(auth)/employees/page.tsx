@@ -1,57 +1,12 @@
 'use client'
 
-import React, { useState, useReducer, useEffect } from 'react';
+import React, { use, useState,  useEffect } from 'react';
 import { Modal, Button, Input } from 'antd';
 import { Col, Row } from "antd";
 import EmployeeForm from '@/components/EmployeeForm/EmployeeForm';
 
-function recordsReducer(state: any, action: any) {
-    switch (action.type) {
-        case 'toggle': { return { ...state, [action.fieldName]: action.payload } }
-        case 'create': {
-            return {
-                ...state,
-                create: true,
-                visible: true,
-            }
-        }
-        case 'edit': {
-            return {
-                ...state,
-                edit: true,
-                visible: true,
-            }
-        }
-        case 'modalOff': {
-            return {
-                ...state,
-                visible: false,
-                create: false,
-                edit: false
-            }
-        }
-        default: return state
-    }
-}
+const Employees = () => {
 
-const initialState = {
-    records: [],
-    load: true,
-    visible: false,
-    create: false,
-    edit: false,
-
-
-};
-
-// interface Users {
-
-//   }
-
-const employees = () => {
-
-    const [state, dispatch] = useReducer(recordsReducer, initialState);
-    const { records, visible } = state;
     const [users, setUsers] = useState<any>([]);
 
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -181,5 +136,5 @@ const employees = () => {
 }
 
 
-export default employees
+export default Employees
 
