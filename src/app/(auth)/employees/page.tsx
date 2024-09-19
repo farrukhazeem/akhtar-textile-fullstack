@@ -47,7 +47,7 @@ const Employees = () => {
         <h5 className="mt-0 mb-2 text-gray-800 font-medium text-lg">Employees</h5>
         <div className="flex items-center space-x-4">
           <Input
-            placeholder="Enter Name"
+            placeholder="Search..."
             className="border border-gray-300 rounded-sm px-3 py-2 text-gray-800 text-sm transition-all duration-300 hover:border-blue-500 hover:border-r rounded-2xl"
           />
           <Button
