@@ -7,7 +7,21 @@ import EmployeeForm from '@/components/EmployeeForm/EmployeeForm';
 const Employees = () => {
   const [users, setUsers] = useState<any[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [query, setQuery] = useState("");
+  const [originalEmployeeList, setOriginalEmployeeList] = useState([]);
+  const keys = ["name"]
+  const search = (data:any) => {
+    return data.filter((item:any)=>{
+     return keys.some(key=>item[key].toLowerCase().includes(query.toLowerCase()));
+    })
+  }
 
+  useEffect(()=>{
+    const filteredData = search(originalEmployeeList);
+    setUsers(filteredData)
+
+  },[query, users])
+  
   const fetchUsers = async () => {
    try {
       const response = await fetch('/api/getAllUsers');
@@ -16,14 +30,14 @@ const Employees = () => {
       }
       const data = await response.json();
       setUsers(data.users);
-    } catch (error) {
+      setOriginalEmployeeList(data.users)
+      
+      } catch (error) {
       console.error('Failed to fetch users:', error);
     }
   };
   
   useEffect(() => {
-
-
     fetchUsers();
   }, []);
 
@@ -47,7 +61,8 @@ const Employees = () => {
         <h5 className="mt-0 mb-2 text-gray-800 font-medium text-lg">Employees</h5>
         <div className="flex items-center space-x-4">
           <Input
-            placeholder="Search..."
+            placeholder="Search Name"
+            onChange={e => setQuery(e.target.value)}
             className="border border-gray-300 rounded-sm px-3 py-2 text-gray-800 text-sm transition-all duration-300 hover:border-blue-500 hover:border-r rounded-2xl"
           />
           <Button
@@ -66,30 +81,32 @@ const Employees = () => {
         <table className="min-w-full divide-y divide-gray-200 rounded-lg">
           <thead className="bg-gray-50 border border-gray-200 text-gray-500">
             <tr>
-              <th className="w-1/12 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Code
-              </th>
-              <th className="w-1/4 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Basic Info
-              </th>
-              <th className="w-1/4 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Employee Info
-              </th>
-              <th className="w-1/4 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Bank Info
-              </th>
-              <th className="w-1/6 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                History
-              </th>
+            <th className="w-1/12 px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">
+  Code
+</th>
+<th className="w-1/4 px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">
+  Basic Info
+</th>
+<th className="w-1/4 px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">
+  Employee Info
+</th>
+<th className="w-1/4 px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">
+  Bank Info
+</th>
+<th className="w-1/6 px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">
+  History
+</th>
+
             </tr>
           </thead>
 
           <tbody className="bg-white divide-y divide-gray-200">
             {users.map((user: any) => (
               <tr key={user.id}>
-                <td className="px-6 py-4 whitespace-nowrap">{user.code}</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {`Name: ${user.name}`}<br />
+                <td className="px-6 py-4 whitespace-nowrap text-[#797FE7] font-medium">{user.code}</td>
+                <td className="px-6 py-4 whitespace-nowrap"><span>Name: </span>
+                <span className='text-[#797FE7] font-medium'>{user.name}</span>
+                <br />
                   {`CNIC: ${user.cnic}`}<br />
                   {`Department: ${user.department}`}
                 </td>
@@ -102,7 +119,12 @@ const Employees = () => {
                   {`Bank Name: ${user.bank}`}<br />
                   {`Account#: ${user.account}`}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">Active</td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                Creator: <span className=' text-[#797FE7] font-medium'>{user.createdBy}</span>
+            <br/>
+            Modifier: <span className='text-grey font-medium'>{user.updatedBy==null?'( )':user.updatedBy}</span>
+
+                </td>
               </tr>
             ))}
           </tbody>

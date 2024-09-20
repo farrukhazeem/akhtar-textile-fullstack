@@ -9,14 +9,11 @@ export async function GET() {
   const client = await pool.connect()
 
   try {
-    // Query to select all users from the database
     const query = 'SELECT * FROM users'
     const result = await client.query(query)
 
-    // Log the fetched data for debugging
-    console.log("Fetched users:", result.rows)
+    // console.log("Fetched users:", result.rows)
 
-    // Return the fetched users as a response
     return NextResponse.json({ users: result.rows }, { status: 200 })
   } catch (error) {
     console.error('Error fetching users:', error)
