@@ -25,7 +25,8 @@ const Employees = () => {
   const fetchUsers = async () => {
    try {
       const response = await fetch('/api/getAllUsers',{
-          cache: 'no-store'
+          cache: 'no-store',
+          next: { revalidate: 0 }
         });
       if (!response.ok) {
         throw new Error('Network response was not ok');
