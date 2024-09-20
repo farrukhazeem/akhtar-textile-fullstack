@@ -299,10 +299,101 @@ export async function GET() {
       }
     });
 
+    // recipes.forEach((recipe) => {
+    //   // Filter steps related to the current recipe
+      
+    //   const recipeSteps = steps.filter(step => step.recipesid === recipe.id);
+    //   let firstStepRow = worksheet.lastRow.number + 1; // Track the first step row for this recipe
+    
+    //   recipeSteps.forEach((step) => {
+    //     // Get chemicals associated with the step
+    //     const stepChemicals = chemicalsAssociation
+    //       .filter(assoc => assoc.stepid === step.id)
+    //       .map(assoc => {
+    //         const chemical = chemicals.find(c => c.id === assoc.chemicalid);
+    //         return {
+    //           chemical_name: chemical ? chemical.name : 'Unknown',
+    //           dosage_percent: assoc.percentage !== null ? assoc.percentage : 'Unknown',
+    //           dosage: assoc.dosage !== null ? assoc.dosage : 'Unknown',
+    //         };
+    //       });
+    
+    //     stepChemicals.forEach((chemical) => {
+    //       worksheet.addRow({
+    //         recipe_number: recipe.recipe_number,
+    //         fno: recipe.fno,
+    //         fabric: recipe.fabric,
+    //         wash: recipe.finish,  // Correctly using 'finish' for wash
+    //         active_flag: 'Y',     // Default value
+    //         load_size: recipe.load_size,
+    //         action: step.action,
+    //         liters: step.liters,
+    //         rpm: step.rpm,
+    //         centigrade: step.centigrade,
+    //         ph: step.ph,
+    //         tds: step.tds,
+    //         tss: step.tss,
+    //         minutes: step.minutes,
+    //         step_no: step.step_no,
+    //         chemical_name: chemical.chemical_name,
+    //         dosage_percent: chemical.dosage_percent,
+    //         dosage: chemical.dosage,
+    //       });
+    //     });
+
+    //     // If no chemicals are associated, still repeat FNO, Fabric, Wash, Active Flag, and Load Size
+    //     if (stepChemicals.length === 0) {
+    //       worksheet.addRow({
+    //         recipe_number: recipe.recipe_number,
+    //         fno: recipe.fno,
+    //         fabric: recipe.fabric,
+    //         wash: recipe.finish,  // Correctly using 'finish' for wash
+    //         active_flag: 'Y',     // Default value
+    //         load_size: recipe.load_size,
+    //         action: step.action,
+    //         liters: step.liters,
+    //         rpm: step.rpm,
+    //         centigrade: step.centigrade,
+    //         ph: step.ph,
+    //         tds: step.tds,
+    //         tss: step.tss,
+    //         minutes: step.minutes,
+    //         step_no: step.step_no,
+    //       });
+    //     }
+
+    //   });
+    
+    //   const lastRow = worksheet.lastRow;
+    //   if (lastRow) {
+    //     // Apply bottom border for the last row of the recipe
+    //     for (let col = 1; col <= 20; col++) {
+    //       const cell = lastRow.getCell(col);
+    //       cell.border = {
+    //         bottom: { style: 'thick', color: { argb: '000000' } },
+    //       };
+    //     }
+    
+    //     // Apply vertical lines to the sections
+    //     const sectionColumns = [6, 13, 17, 20];
+    //     sectionColumns.forEach(colNum => {
+    //       for (let rowNum = firstStepRow; rowNum <= lastRow.number; rowNum++) {
+    //         const row = worksheet.getRow(rowNum);
+    //         const cell = row.getCell(colNum);
+    //         cell.border = {
+    //           right: { style: 'thick', color: { argb: '000000' } },
+    //         };
+    //       }
+    //     });
+    //   }
+    // });
+    
     recipes.forEach((recipe) => {
       // Filter steps related to the current recipe
       const recipeSteps = steps.filter(step => step.recipesid === recipe.id);
-      let firstStepRow = worksheet.lastRow.number + 1; // Track the first step row for this recipe
+      
+      // Track the first step row for this recipe
+      let firstStepRow = worksheet.lastRow ? worksheet.lastRow.number + 1 : 1;
     
       recipeSteps.forEach((step) => {
         // Get chemicals associated with the step
@@ -339,7 +430,7 @@ export async function GET() {
             dosage: chemical.dosage,
           });
         });
-
+    
         // If no chemicals are associated, still repeat FNO, Fabric, Wash, Active Flag, and Load Size
         if (stepChemicals.length === 0) {
           worksheet.addRow({
@@ -360,7 +451,6 @@ export async function GET() {
             step_no: step.step_no,
           });
         }
-
       });
     
       const lastRow = worksheet.lastRow;
@@ -386,7 +476,7 @@ export async function GET() {
         });
       }
     });
-        
+    
     
     worksheet.columns.forEach(column => {
       if (column && typeof column.eachCell === 'function') {
