@@ -308,7 +308,7 @@ const Recipe = () => {
       const fileDataArray = uploadResponse.data.recipes;
 
       await Promise.all(fileDataArray.map((fileData: UploadResponse) =>
-        axios.post('http://localhost:3000/api/saveBulkRecipes/', fileData, {
+        axios.post('/api/saveBulkRecipes/', fileData, {
           headers: { 'Content-Type': 'application/json' },
         })
       ));
