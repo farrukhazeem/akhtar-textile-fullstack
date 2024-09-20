@@ -20,7 +20,7 @@ const Employees = () => {
     const filteredData = search(originalEmployeeList);
     setUsers(filteredData)
 
-  },[query, users])
+  },[query, originalEmployeeList])
   
   const fetchUsers = async () => {
    try {
