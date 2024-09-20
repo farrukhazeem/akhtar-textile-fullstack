@@ -253,7 +253,9 @@ const Recipe = () => {
   useEffect(() => {
     const fetchRecipes = async () => {
       try {
-        const response = await fetch('/api/getRecipe');
+        const response = await fetch('/api/getRecipe',{
+          cache: 'no-store'
+        });
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
