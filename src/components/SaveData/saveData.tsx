@@ -36,7 +36,7 @@ const SaveData: React.FC<SaveDataProps> = ({ form, tableData, recipe1 }) => {
 
       console.log('Recipe Data to be sent:', recipeData);
 
-      await axios.post('http://localhost:3000/api/saveRecipe/', recipeData, {
+      await axios.post('/api/saveRecipe/', recipeData, {
         headers: { 'Content-Type': 'application/json' },
       });
 
