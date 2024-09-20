@@ -248,7 +248,7 @@ export async function GET() {
       { header: 'Recipe Number', key: 'recipe_number' },
       { header: 'FNO', key: 'fno' },
       { header: 'Fabric', key: 'fabric' },
-      { header: 'Wash', key: 'finish' },
+      { header: 'Wash', key: 'wash' },
       { header: 'Active Flag', key: 'active_flag' },
       { header: 'Load Size', key: 'load_size' },
       { header: 'Action', key: 'action' },
@@ -317,14 +317,13 @@ export async function GET() {
             };
           });
     
-        // Repeat FNO, Fabric, Wash, Active Flag, Load Size, and step details for each chemical
         stepChemicals.forEach((chemical) => {
           worksheet.addRow({
             recipe_number: recipe.recipe_number,
             fno: recipe.fno,
             fabric: recipe.fabric,
-            wash: recipe.finish,
-            active_flag: 'Y',  // Default value
+            wash: recipe.finish,  // Correctly using 'finish' for wash
+            active_flag: 'Y',     // Default value
             load_size: recipe.load_size,
             action: step.action,
             liters: step.liters,
@@ -340,15 +339,15 @@ export async function GET() {
             dosage: chemical.dosage,
           });
         });
-    
+
         // If no chemicals are associated, still repeat FNO, Fabric, Wash, Active Flag, and Load Size
         if (stepChemicals.length === 0) {
           worksheet.addRow({
             recipe_number: recipe.recipe_number,
             fno: recipe.fno,
             fabric: recipe.fabric,
-            wash: recipe.finish,
-            active_flag: 'Y',  // Default value
+            wash: recipe.finish,  // Correctly using 'finish' for wash
+            active_flag: 'Y',     // Default value
             load_size: recipe.load_size,
             action: step.action,
             liters: step.liters,
@@ -361,6 +360,7 @@ export async function GET() {
             step_no: step.step_no,
           });
         }
+
       });
     
       const lastRow = worksheet.lastRow;
