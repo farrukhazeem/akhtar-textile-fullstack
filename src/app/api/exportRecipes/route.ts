@@ -410,7 +410,7 @@ export async function GET() {
     
         stepChemicals.forEach((chemical) => {
           worksheet.addRow({
-            recipe_number: recipe.recipe_number,
+            recipe_number: recipe.recipe,
             fno: recipe.fno,
             fabric: recipe.fabric,
             wash: recipe.finish,  // Correctly using 'finish' for wash
@@ -434,7 +434,7 @@ export async function GET() {
         // If no chemicals are associated, still repeat FNO, Fabric, Wash, Active Flag, and Load Size
         if (stepChemicals.length === 0) {
           worksheet.addRow({
-            recipe_number: recipe.recipe_number,
+            recipe_number: recipe.recipe,
             fno: recipe.fno,
             fabric: recipe.fabric,
             wash: recipe.finish,  // Correctly using 'finish' for wash
