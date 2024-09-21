@@ -7,7 +7,8 @@ const pool = new Pool({ connectionString: "postgres://akhtar11:9T0NMeQlomBAVtZ4_
 
 export async function GET() {
   try {
-    const result = await pool.query('SELECT * FROM recipes');
+    const result = await pool.query('SELECT * FROM "recipes"');
+    console.log(">>>>>>>",result)
     return NextResponse.json(result.rows);
   } catch (error) {
     console.error(error);
