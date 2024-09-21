@@ -1,4 +1,7 @@
 // src/app/api/getRecipe/route.ts
+export const fetchCache = 'force-no-store';
+export const dynamic = 'force-dynamic';
+
 import { NextResponse } from 'next/server';
 import { Pool } from 'pg';
 

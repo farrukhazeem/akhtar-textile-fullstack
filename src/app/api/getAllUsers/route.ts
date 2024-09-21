@@ -1,3 +1,6 @@
+export const fetchCache = 'force-no-store';
+export const dynamic = 'force-dynamic';
+
 import { NextResponse } from 'next/server'
 import { Pool } from 'pg'
 
@@ -9,15 +12,17 @@ export async function GET() {
   const client = await pool.connect()
 
   try {
-    // Query to select all users from the database
     const query = 'SELECT * FROM users'
     const result = await client.query(query)
 
-    // Log the fetched data for debugging
-    console.log("Fetched users:", result.rows)
+    // console.log("Fetched users:", result.rows)
 
-    // Return the fetched users as a response
-    return NextResponse.json({ users: result.rows }, { status: 200 })
+    return NextResponse.json({ users: result.rows }, {
+      status: 200,
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate', // Disable caching for this API route
+      },
+    })
   } catch (error) {
     console.error('Error fetching users:', error)
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 })
