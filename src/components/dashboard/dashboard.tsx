@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-const dashboard = () => {
+const Dashboard = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
@@ -30,4 +30,4 @@ const dashboard = () => {
   );
 };
 
-export default dashboard;
+export default Dashboard;
