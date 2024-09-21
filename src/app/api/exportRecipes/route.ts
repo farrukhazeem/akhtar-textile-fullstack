@@ -303,13 +303,18 @@ export async function GET() {
     const rowSet = new Set();
 
     recipes.forEach((recipe) => {
-      // Filter steps related to the current recipe
       const recipeSteps = steps.filter(step => step.recipesid === recipe.id);
-      
+    
+      // Check if recipe_number exists, else log a warning
+      if (!recipe.recipe) {
+        console.warn(`Recipe number missing for recipe ID: ${recipe.id}`);
+      } else {
+        console.log(`Processing recipe: ${recipe.recipe}`);
+      }
+    
       let firstStepRow = worksheet.lastRow ? worksheet.lastRow.number + 1 : 1;
-      
+    
       recipeSteps.forEach((step) => {
-        // Get chemicals associated with the step
         const stepChemicals = chemicalsAssociation
           .filter(assoc => assoc.stepid === step.id)
           .map(assoc => {
@@ -320,11 +325,10 @@ export async function GET() {
               dosage: assoc.dosage !== null ? assoc.dosage : 'Unknown',
             };
           });
-
+    
         stepChemicals.forEach((chemical) => {
-          // Create a unique key for the current row to check for duplicates
-          const rowKey = `${recipe.recipe_number}-${step.step_no}-${chemical.chemical_name}`;
-          
+          const rowKey = `${recipe.recipe || recipe.id}-${step.step_no}-${chemical.chemical_name}`;
+    
           if (!rowSet.has(rowKey)) {
             worksheet.addRow({
               recipe_number: recipe.recipe,
@@ -346,14 +350,12 @@ export async function GET() {
               dosage_percent: chemical.dosage_percent,
               dosage: chemical.dosage,
             });
-            rowSet.add(rowKey);  // Mark row as added to prevent duplicates
+            rowSet.add(rowKey);
           }
         });
-
+    
         if (stepChemicals.length === 0) {
-          // Create a unique key for steps without chemicals
-          const rowKey = `${recipe.recipe_number}-${step.step_no}`;
-          
+          const rowKey = `${recipe.recipe || recipe.id}-${step.step_no}`;
           if (!rowSet.has(rowKey)) {
             worksheet.addRow({
               recipe_number: recipe.recipe,
@@ -372,22 +374,20 @@ export async function GET() {
               minutes: step.minutes,
               step_no: step.step_no,
             });
-            rowSet.add(rowKey);  // Mark row as added to prevent duplicates
+            rowSet.add(rowKey);
           }
         }
       });
     
       const lastRow = worksheet.lastRow;
       if (lastRow) {
-        // Apply bottom border for the last row of the recipe
         for (let col = 1; col <= 20; col++) {
           const cell = lastRow.getCell(col);
           cell.border = {
             bottom: { style: 'thick', color: { argb: '000000' } },
           };
         }
-
-        // Apply vertical lines to the sections
+    
         const sectionColumns = [6, 13, 17, 20];
         sectionColumns.forEach(colNum => {
           for (let rowNum = firstStepRow; rowNum <= lastRow.number; rowNum++) {
@@ -400,6 +400,7 @@ export async function GET() {
         });
       }
     });
+    
 
     worksheet.columns.forEach(column => {
       if (column && typeof column.eachCell === 'function') {
