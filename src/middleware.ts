@@ -1,21 +1,38 @@
-// src/middleware.ts
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
+import jwt from 'jsonwebtoken';
+
+const secretKey = process.env.JWT_SECRET || 'qwertyuiopasdfghjklzxcvbnmqwertyuiopasdfghjklzxcvbnm';
 
 export function middleware(req: NextRequest) {
-  const url = req.nextUrl;
+  // Log the request URL
+  console.log('Middleware running for:', req.url);
 
-  // Check if the request is for an API route
-  if (url.pathname.startsWith('/api/')) {
-    const response = NextResponse.next();
-    response.headers.set('Cache-Control', 'no-store'); // Disable cache for API routes
-    return response;
+  // Get the JWT token from the cookies
+  const token = req.cookies.get('token')?.value;
+
+  if (!token) {
+    // If no token, redirect to the login page
+    console.log('No token found, redirecting to /login');
+    return NextResponse.redirect(new URL('/', req.url));
   }
 
-  return NextResponse.next();
+  try {
+    // Verify the token
+    const decoded = jwt.verify(token, secretKey);
+    console.log('Token verified:', decoded);
+
+    // If the token is valid, proceed with the request
+    return NextResponse.next();
+  } catch (error:any) {
+    // If token verification fails, redirect to the login page
+    console.error('Invalid token, redirecting to /login:', error.message);
+    return NextResponse.redirect(new URL('/', req.url));
+  }
 }
 
-// Ensure that only API routes use the middleware
+
 export const config = {
-  matcher: '/api/:path*',
+  matcher: ['/protected/:path*', '/some-other-protected-route'], // Protected routes
+  // Exclude /login route
+  skip: ['/', '/api/login'],
 };

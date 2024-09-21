@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { Pool } from 'pg';
+import { serialize } from 'cookie';
 
 // Initialize the PostgreSQL connection pool
 const pool = new Pool({
@@ -9,7 +10,7 @@ const pool = new Pool({
 });
 
 // Secret key for JWT
-const JWT = "qwertyuiopasdfghjklzxcvbnmqwertyuiopasdfghjklzxcvbnm"
+const JWT_SECRET = "qwertyuiopasdfghjklzxcvbnmqwertyuiopasdfghjklzxcvbnm";
 
 export async function POST(request: NextRequest) {
   const client = await pool.connect();
@@ -44,13 +45,21 @@ export async function POST(request: NextRequest) {
         name: user.name,
         username: user.username,
       },
-      JWT,
+      JWT_SECRET,
       { expiresIn: '1h' }
     );
 
-    // Respond with the token
-    const response = NextResponse.json({ token: token, message: "Logged in successfully" }, { status: 200 });
-    response.cookies.set('token', token);
+    // Serialize the cookie
+    const cookie = serialize('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 60 * 60, // 1 hour
+      path: '/',
+    });
+
+    // Respond with the token and set the cookie
+    const response = NextResponse.json({ token: token, message: "Logged in successfully" });
+    response.headers.set('Set-Cookie', cookie); // Set the cookie header here
 
     return response;
 

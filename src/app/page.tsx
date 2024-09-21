@@ -50,8 +50,6 @@ const Login: React.FC = () => {
         return;
       }
 
-      localStorage.setItem('token', data.token);
-
       router.push('/dashboard');
     } catch (error) {
       console.error('Login failed', error);

@@ -1,8 +1,10 @@
+import NexusForm from "@/components/NexusForm/NexusForm";
+
 const nexusData = () => {
     return (
       <div>
-        <h1>nexusData Component</h1>
-      </div>
+      <NexusForm />
+     </div>
     );
   };
   
