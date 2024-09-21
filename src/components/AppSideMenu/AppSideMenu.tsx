@@ -138,17 +138,20 @@ export default function AppSideMenu() {
     if (pathname.startsWith("/dashboard")) {
       setSelectedKey("2");
     } else if (pathname.startsWith("/recipe")) {
+      setSelectedKey("12");
+      setOpenKeys(["3"]);  // Open "Reciepe Menu"
+    } else if (pathname.startsWith("/recipe")) {
       setSelectedKey("3");
-      setOpenKeys(["3"]); 
+      setOpenKeys(["3"]);  // Open "Reciepe Menu"
     } else if (pathname.startsWith("/upload-recipe")) {
       setSelectedKey("4");
-      setOpenKeys(["3"]); 
+      setOpenKeys(["3"]);  // Open "Reciepe Menu"
     } else if (pathname.startsWith("/setup")) {
       setSelectedKey("5");
-      setOpenKeys(["5"]); 
+      setOpenKeys(["5"]);  // Open "Setup" submenu
     } else if (pathname.startsWith("/employees")) {
       setSelectedKey("10");
-      setOpenKeys(["5"]); // Open "Setup" submenu
+      setOpenKeys(["5"]);  // Open "Setup" submenu
     } else if (pathname.startsWith("/p-l")) {
       setSelectedKey("6");
     } else if (pathname.startsWith("/damco-data")) {
@@ -197,9 +200,16 @@ export default function AppSideMenu() {
     },
     {
       label: (
-        <Link href="/recipe" className="text-black">Recipes</Link>
+        <span className="text-black">Reciepe</span>
       ),
       children: [
+        {
+          label: (
+            <Link href="/recipe" className="text-black">Reciepe List</Link>
+          ),
+          key: "12",  // New key for Reciepe List
+          icon: <ReadOutlined />,
+        },
         {
           label: (
             <Link href="/upload-recipe" className="text-black">Upload Recipe</Link>
