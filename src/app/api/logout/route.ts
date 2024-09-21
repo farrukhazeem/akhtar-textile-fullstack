@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { serialize } from 'cookie';
 
 export async function POST(req: NextRequest) {
   try {
     // Clear the 'token' cookie
     const response = NextResponse.json({ message: 'Logged out successfully' });
     response.cookies.set('token', '', {
-      expires: new Date(0), // Set the cookie to expire in the past
-      path: '/', // Ensure the path matches the cookie's path
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: -1, // Expire the cookie
+    path: '/',
     });
     return response;
   } catch (error) {
