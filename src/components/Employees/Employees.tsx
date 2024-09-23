@@ -77,7 +77,7 @@ const Employees = () => {
       </div>
 
       {/* Table */}
-      <div className="mt-8 overflow-x-auto">
+      <div className="mt-8">
         <table className="min-w-full divide-y divide-gray-200 rounded-lg">
           <thead className="bg-gray-50 border border-gray-200 text-gray-500">
             <tr>

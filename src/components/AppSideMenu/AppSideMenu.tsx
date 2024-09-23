@@ -124,6 +124,7 @@ import {
   BulbOutlined,
   UserOutlined,
   UploadOutlined,
+  ExperimentOutlined 
 } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import { notification } from "antd";
@@ -152,7 +153,11 @@ export default function AppSideMenu() {
     } else if (pathname.startsWith("/employees")) {
       setSelectedKey("10");
       setOpenKeys(["5"]);  // Open "Setup" submenu
-    } else if (pathname.startsWith("/p-l")) {
+    } else if (pathname.startsWith("/chemicals")) {
+      setSelectedKey("15");
+      setOpenKeys(["5"]);  // Open "Setup" submenu
+    }     
+    else if (pathname.startsWith("/p-l")) {
       setSelectedKey("6");
     } else if (pathname.startsWith("/damco-data")) {
       setSelectedKey("7");
@@ -232,6 +237,13 @@ export default function AppSideMenu() {
           ),
           key: "10",
           icon: <UserOutlined />,
+        },
+        {
+          label: (
+            <Link href="/chemicals" className="text-black">Chemicals</Link>
+          ),
+          key: "15",
+          icon: <ExperimentOutlined  />,
         },
       ],
       key: "5",
