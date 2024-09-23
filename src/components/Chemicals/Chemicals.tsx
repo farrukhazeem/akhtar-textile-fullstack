@@ -77,86 +77,78 @@ const Chemicals = () => {
       </div>
 
       {/* Table */}
-      <div className="mt-8">
-      <table className="min-w-full divide-y divide-gray-200 rounded-lg">
-      <thead className="bg-gray-50 border border-gray-200 text-gray-500">
+<div className="mt-8">
+  <table className="min-w-full divide-y divide-gray-200 rounded-lg shadow-lg">
+  <thead className="bg-purple-50 border border-gray-200 text-gray-600">
   <tr>
-  <th className="w-1/6 px-4 py-3 text-left text-xs font-bold text-black">
+    <th className="w-1/9 px-4 text-left text-xs text-black">
       Washing Name
     </th>
-    <th className="w-1/6 px-4 py-3 text-left text-xs font-bold text-black">
+    <th className="w-1/9 text-left text-xs text-black">
       Full Name
     </th>
-    <th className="w-1/12 px-4 py-3 text-left text-xs font-bold text-black">
+    <th className="w-1/9 text-left text-xs text-black">
       Cost/KG
     </th>
-    <th className="w-1/12 py-3 text-left text-xs font-bold text-black">
+    <th className="w-1/9 py-3 text-left text-xs text-black">
       KG/Can
     </th>
-    <th className="w-1/6 py-3 text-left text-xs font-bold text-black">
+    <th className="w-1/9 py-3 text-left text-xs text-black">
       Cost/Unit Of Usage
     </th>
-    <th className="w-1/1 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">
+    <th className="w-1/9 py-3 text-left text-xs text-black ">
       Cost/UOM
     </th>
-    <th className="w-1/1  py-3 text-left text-xs font-bold text-black">
+    <th className="w-1/9 py-3 text-left text-xs text-black">
       Type & Use
     </th>
-    <th className="w-1/1 py-3 text-left text-xs font-bold text-black">
+    <th className="w-1/9 py-3 text-left text-xs text-black">
       Unit Used
     </th>
-    <th className="py-3 text-left text-xs font-bold text-black">
+    <th className="w-1/9 py-3 text-left text-xs text-black">
       Unit Conversion
     </th>
   </tr>
 </thead>
 
-          <tbody className="bg-white divide-y divide-gray-200">
-            {chemicals.map((chemicals: any) => (
-              <tr key={chemicals.id}>
-                <td className="px-6 py-4 whitespace-nowrap">
-                <span className='text-[#797FE7] font-medium'>{chemicals.name}</span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                <span className='text-[#797FE7] font-medium'>{chemicals.full_name}</span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                <span className='text-[#797FE7] font-medium'>{chemicals.cost_per_kg}</span>
-              
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                <span className='text-[#797FE7] font-medium'>{chemicals.kg_per_can}</span>
 
-          
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                <span className='text-[#797FE7] font-medium'>{chemicals.cost_per_unit}</span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                <span className='text-[#797FE7] font-medium'>{chemicals.cost_uom}</span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                <span className='text-[#797FE7] font-medium'>{chemicals.type_and_use}</span>
-
-                </td>
-                
-                <td className="px-6 py-4 whitespace-nowrap">
-                <span className='text-[#797FE7] font-medium'>{chemicals.unit_used}</span>
-
-                </td>
-                
-                <td className="px-6 py-4 whitespace-nowrap">
-                <span className='text-[#797FE7] font-medium'>{chemicals.unit_conversion}</span>
-
-                </td>
-                
+    <tbody className="bg-white divide-y divide-gray-200">
+      {chemicals.map((chemicals: any) => (
+        <tr key={chemicals.id} className="hover:bg-purple-50 transition duration-200">
+          <td className="px-6 py-4">
+            <span className='text-[#797FE7] '>{chemicals.name}</span>
+          </td>
+          <td className="px-3 py-4 ">
+            <span className='text-[#797FE7] '>{chemicals.full_name}</span>
+          </td>
+          <td className="px-3 py-4  text-center">
+            <span className='text-[#797FE7] '>{chemicals.cost_per_kg}</span>
+          </td>
+          <td className="px-3 py-4  text-center">
+            <span className='text-[#797FE7] '>{chemicals.kg_per_can}</span>
+          </td>
+          <td className="px-3 py-4  text-center">
+            <span className='text-[#797FE7] '>{chemicals.cost_per_unit}</span>
+          </td>
+          <td className="px-3 py-4  text-center">
+            <span className='text-[#797FE7] '>{chemicals.cost_uom}</span>
+          </td>
+          <td className="px-3 py-4 ">
+            <span className='text-[#797FE7] '>{chemicals.type_and_use}</span>
+          </td>
+          <td className="px-3 py-4  text-center">
+            <span className='text-[#797FE7] '>{chemicals.unit_used}</span>
+          </td>
+          <td className="px-3 py-4  text-center">
+            <span className='text-[#797FE7] '>{chemicals.unit_conversion}</span>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
 
 
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
 
       {/* Modal */}
       <Modal
