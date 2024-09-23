@@ -1,4 +1,4 @@
-// "use client";
+// 'use client';
 
 // import { useEffect, useState } from 'react';
 // import { Card, Row, Col, Typography, Spin, Empty, Button, message, Upload, Modal } from 'antd';
@@ -14,38 +14,25 @@
 //   [key: string]: any;
 // }
 
-// interface Chemical {
-//   recipe_name: string;
-//   percentage: number;
-//   dosage: number;
-// }
-
-// interface Step {
-//   step: number;
-//   action: string;
-//   minutes: number;
-//   liters: number;
-//   rpm: number;
-//   chemicalName: string[];
-//   percentage: number[];
-//   dosage: number[];
-//   centigrade: number;
+// interface UploadResponse {
+//   id: number;
+//   file_name: string;
+//   // Add other properties as needed
 // }
 
 // const Recipe = () => {
 //   const [recipes, setRecipes] = useState<Recipe[]>([]);
 //   const [loading, setLoading] = useState<boolean>(true);
+//   const [uploading, setUploading] = useState<boolean>(false); // For upload spinner
 //   const [error, setError] = useState<string | null>(null);
 //   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  
-//   // Assuming you have these variables from somewhere in your app
-//   const [recipe1, setRecipe1] = useState<{ file_name: string } | null>(null);
-//   const [tableData, setTableData] = useState<Step[]>([]);
 
 //   useEffect(() => {
 //     const fetchRecipes = async () => {
 //       try {
-//         const response = await fetch('/api/getRecipe');
+//         const response = await fetch('/api/getRecipe',{
+//           cache: 'no-store'
+//         });
 //         if (!response.ok) {
 //           throw new Error('Network response was not ok');
 //         }
@@ -82,47 +69,41 @@
 //     }
 //   };
 
- 
-//   interface UploadResponse {
-//     id: number;
-//     file_name: string;
-//     // Add other properties as needed
-//   }
-  
 //   const handleUpload = async (files: File[]) => {
 //     const formData = new FormData();
+    
 //     files.forEach(file => {
 //       formData.append('files', file);
 //     });
-  
+
 //     try {
+//       setUploading(true); // Start loading spinner
 //       const uploadResponse = await axios.post('https://huge-godiva-arsalan-3b36a0a1.koyeb.app/uploadfile', formData, {
 //         headers: { 'Content-Type': 'multipart/form-data' },
 //       });
-  
+
 //       console.log('Upload Response:', uploadResponse.data);
       
-//       // Get the recipes array from the response
-//       const fileDataArray = uploadResponse.data.recipes; // Adjusted here
-  
-//       // Automatically save each file's data
-//       await Promise.all(fileDataArray.map((fileData: UploadResponse) => 
-//         axios.post('http://localhost:3000/api/saveRecipe/', fileData, {
+//       const fileDataArray = uploadResponse.data.recipes;
+
+//       await Promise.all(fileDataArray.map((fileData: UploadResponse) =>
+//         axios.post('/api/saveBulkRecipes/', fileData, {
 //           headers: { 'Content-Type': 'application/json' },
 //         })
 //       ));
-  
+
 //       message.success('All recipes saved successfully');
+//       setIsModalOpen(false); // Close modal on success
 //     } catch (error) {
 //       console.error('Error uploading files:', error);
 //       message.error('Error uploading files');
+//     } finally {
+//       setUploading(false);
 //     }
-    
-//     return false; 
+
+//     return false;
 //   };
-  
-  
-  
+
 //   const showModal = () => {
 //     setIsModalOpen(true);
 //   };
@@ -131,7 +112,6 @@
 //     setIsModalOpen(false);
 //   };
 
-  
 //   if (loading) {
 //     return (
 //       <div style={{ textAlign: 'center', padding: '2rem' }}>
@@ -147,10 +127,17 @@
 //       </div>
 //     );
 //   }
+//   const groupedRecipes: { [key: string]: Recipe[] } = recipes.reduce((acc, recipe) => {
+//     const date = new Date(recipe.created_at).toLocaleDateString();
+//     if (!acc[date]) {
+//       acc[date] = [];
+//     }
+//     acc[date].push(recipe);
+//     return acc;
+//   }, {} as { [key: string]: Recipe[] });
 
 //   return (
 //     <div style={{ padding: '2rem' }}>
-//       {/* Flexbox layout for title and buttons */}
 //       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
 //         <Title level={1} style={{ margin: 0 }}>Recipes</Title>
 //         <div style={{ display: 'flex', gap: '1rem' }}>
@@ -158,6 +145,7 @@
 //             type="primary"
 //             onClick={handleExport}
 //             style={{ backgroundColor: '#797FE7', borderColor: '#797FE7' }}
+//             disabled={uploading} // Disable buttons during upload
 //           >
 //             Export Data
 //           </Button>
@@ -165,54 +153,63 @@
 //             type="default"
 //             onClick={showModal}
 //             style={{ backgroundColor: 'white', borderColor: '#d9d9d9' }}
+//             disabled={uploading} // Disable buttons during upload
 //           >
 //             <UploadOutlined /> Upload
 //           </Button>
 //         </div>
 //       </div>
 
-//       {/* Modal for upload */}
+      
 //       <Modal
 //         title="Upload File"
 //         visible={isModalOpen}
 //         onCancel={handleCancel}
-//         footer={null} // To remove the default footer buttons
+//         footer={null} // Remove default footer buttons
 //       >
-//         <Upload
-//         beforeUpload={(file) => handleUpload([file])} 
-//         accept=".xlsx, .xls"
-//         multiple={true} 
-//         >
-//         <Button icon={<UploadOutlined />}>Click to Upload</Button>
-//         </Upload>
+//         {uploading ? (
+//           <div style={{ textAlign: 'center', padding: '2rem' }}>
+//             <Spin size="large" />
+//           </div>
+//         ) : (
+//           <Upload
+//             beforeUpload={(file) => handleUpload([file])}
+//             accept=".xlsx, .xls"
+//             multiple={true}
+//           >
+//             <Button icon={<UploadOutlined />}>Click to Upload</Button>
+//           </Upload>
+//         )}
 //       </Modal>
-      
-//       {recipes.length === 0 ? (
-//         <div style={{ textAlign: 'center', padding: '2rem' }}>
-//           <Empty description="No recipes found" />
-//         </div>
+
+//       {Object.keys(groupedRecipes).length === 0 ? (
+//         <Empty description="No recipes found" />
 //       ) : (
-//         <Row gutter={16}>
-//           {recipes.map(recipe => (
-//             <Col span={8} key={recipe.id}>
-//               <Link href={`/recipesDetails/${recipe.id}`}>
-//               <Card
-              
-//                 hoverable
-//                 cover={<img alt={recipe.recipe_name} src="https://via.placeholder.com/300" />} // Placeholder image
-//                 style={{ marginBottom: '1rem' }}
-//               >
-//                 <Card.Meta
-//                   title={recipe.name}
-//                   description={
-//                       <Text style={{ color: '#797FE7', textDecoration: 'underline' }}>View Details</Text>
-//                   }
-//                 />
-//               </Card>
-//               </Link>
-//             </Col>
+//         <div>
+//           {Object.keys(groupedRecipes).map(date => (
+//             <div key={date}>
+//               <Text style={{ fontWeight: 'bold', marginBottom: '1rem' }}>{date}</Text>
+//               <Row gutter={16}>
+//                 {groupedRecipes[date].map((recipe: Recipe) => (
+//                   <Col span={8} key={recipe.id}>
+//                     <Link href={`/recipesDetails/${recipe.id}`}>
+//                       <Card hoverable style={{ marginBottom: '1rem' }}>
+//                         <Card.Meta
+//                           title={
+//                             <div style={{ display: 'flex', alignItems: 'center' }}>
+//                               <img src="/img/excel.png" alt="Excel Logo" style={{ width: '20px', height: '20px', marginRight: '0.5rem' }} />
+//                               {recipe.name}
+//                             </div>
+//                           }
+//                         />
+//                       </Card>
+//                     </Link>
+//                   </Col>
+//                 ))}
+//               </Row>
+//             </div>
 //           ))}
-//         </Row>
+//         </div>
 //       )}
 //     </div>
 //   );
@@ -224,41 +221,42 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Card, Row, Col, Typography, Spin, Empty, Button, message, Upload, Modal } from 'antd';
+import { Card, Row, Col, Typography, Spin, Empty, Button, message, Upload, Modal, Input } from 'antd';
 import Link from 'next/link';
 import axios from 'axios';
-import { UploadOutlined } from '@ant-design/icons';
+import { UploadOutlined, LoadingOutlined, SearchOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 
 interface Recipe {
   id: number;
   recipe_name: string;
+  created_at: string;
   [key: string]: any;
 }
 
 interface UploadResponse {
   id: number;
   file_name: string;
-  // Add other properties as needed
 }
 
 const Recipe = () => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [uploading, setUploading] = useState<boolean>(false); // For upload spinner
+  const [uploading, setUploading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [startDate, setStartDate] = useState<string | null>(null);
+  const [endDate, setEndDate] = useState<string | null>(null);
+  const [isExporting, setIsExporting] = useState<boolean>(false);
+  const [searchTerm, setSearchTerm] = useState<string>(''); // State for search term
+  const customSpinner = <LoadingOutlined style={{ fontSize: 18, color: '#ffffff' }} spin />;
 
   useEffect(() => {
     const fetchRecipes = async () => {
       try {
-        const response = await fetch('/api/getRecipe',{
-          cache: 'no-store'
-        });
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
+        const response = await fetch('/api/getRecipe', { cache: 'no-store' });
+        if (!response.ok) throw new Error('Network response was not ok');
         const data: Recipe[] = await response.json();
         setRecipes(data);
       } catch (error) {
@@ -273,40 +271,47 @@ const Recipe = () => {
   }, []);
 
   const handleExport = async () => {
+    if (!startDate || !endDate) {
+      message.error('Please select both start and end dates');
+      return;
+    } else if (startDate > endDate) {
+      message.error('Start date is less than end date');
+      return;
+    }
+    setIsExporting(true);
+
     try {
       const response = await axios.get('/api/exportRecipes', {
+        params: { start_date: startDate, end_date: endDate },
         responseType: 'blob',
       });
 
-      // Create a URL for the blob and trigger download
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', 'recipes.xlsx');
       document.body.appendChild(link);
       link.click();
+      message.success('File Downloaded');
       document.body.removeChild(link);
     } catch (error) {
       console.error('Failed to export recipes:', error);
       message.error('Failed to export recipes');
+    } finally {
+      setIsExporting(false);
     }
   };
 
   const handleUpload = async (files: File[]) => {
     const formData = new FormData();
-    
-    files.forEach(file => {
-      formData.append('files', file);
-    });
+    files.forEach(file => formData.append('files', file));
 
     try {
-      setUploading(true); // Start loading spinner
+      setUploading(true);
       const uploadResponse = await axios.post('https://huge-godiva-arsalan-3b36a0a1.koyeb.app/uploadfile', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      console.log('Upload Response:', uploadResponse.data);
-      
       const fileDataArray = uploadResponse.data.recipes;
 
       await Promise.all(fileDataArray.map((fileData: UploadResponse) =>
@@ -316,7 +321,7 @@ const Recipe = () => {
       ));
 
       message.success('All recipes saved successfully');
-      setIsModalOpen(false); // Close modal on success
+      setIsModalOpen(false);
     } catch (error) {
       console.error('Error uploading files:', error);
       message.error('Error uploading files');
@@ -327,102 +332,81 @@ const Recipe = () => {
     return false;
   };
 
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
+  const showModal = () => setIsModalOpen(true);
+  const handleCancel = () => setIsModalOpen(false);
 
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
+  const filteredRecipes = recipes.filter(recipe =>
+    recipe.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-  if (loading) {
-    return (
-      <div style={{ textAlign: 'center', padding: '2rem' }}>
-        <Spin size="large" />
-      </div>
-    );
-  }
+  if (loading) return <center><Spin size="large" style={{ textAlign: 'center', padding: '2rem' }} />; </center>;
+  if (error) return <Title level={4} style={{ textAlign: 'center', padding: '2rem' }}>Error: {error}</Title>;
 
-  if (error) {
-    return (
-      <div style={{ textAlign: 'center', padding: '2rem' }}>
-        <Title level={4}>Error: {error}</Title>
-      </div>
-    );
-  }
+  const groupedRecipes: { [key: string]: Recipe[] } = filteredRecipes.reduce((acc, recipe) => {
+    const date = new Date(recipe.created_at).toLocaleDateString();
+    if (!acc[date]) acc[date] = [];
+    acc[date].push(recipe);
+    return acc;
+  }, {} as { [key: string]: Recipe[] });
 
   return (
     <div style={{ padding: '2rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <Title level={1} style={{ margin: 0 }}>Recipes</Title>
-        <div style={{ display: 'flex', gap: '1rem' }}>
-          <Button
-            type="primary"
-            onClick={handleExport}
-            style={{ backgroundColor: '#797FE7', borderColor: '#797FE7' }}
-            disabled={uploading} // Disable buttons during upload
-          >
-            Export Data
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          <Input
+            placeholder="Search by recipe name"
+            prefix={<SearchOutlined />}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <input type="date" onChange={(e) => setStartDate(e.target.value)} />
+          <input type="date" onChange={(e) => setEndDate(e.target.value)} />
+          <Button type="primary" onClick={handleExport} disabled={uploading}>
+            {isExporting ? <Spin indicator={customSpinner} /> : 'Export'}
           </Button>
-          <Button
-            type="default"
-            onClick={showModal}
-            style={{ backgroundColor: 'white', borderColor: '#d9d9d9' }}
-            disabled={uploading} // Disable buttons during upload
-          >
+          <Button type="default" onClick={showModal} disabled={uploading}>
             <UploadOutlined /> Upload
           </Button>
         </div>
       </div>
 
-      
-      <Modal
-        title="Upload File"
-        visible={isModalOpen}
-        onCancel={handleCancel}
-        footer={null} // Remove default footer buttons
-      >
+      <Modal title="Upload File" visible={isModalOpen} onCancel={handleCancel} footer={null}>
         {uploading ? (
-          <div style={{ textAlign: 'center', padding: '2rem' }}>
-            <Spin size="large" />
-          </div>
+          <Spin size="large" style={{ textAlign: 'center', padding: '2rem' }} />
         ) : (
-          <Upload
-            beforeUpload={(file) => handleUpload([file])}
-            accept=".xlsx, .xls"
-            multiple={true}
-          >
+          <Upload beforeUpload={(file) => handleUpload([file])} accept=".xlsx, .xls" multiple>
             <Button icon={<UploadOutlined />}>Click to Upload</Button>
           </Upload>
         )}
       </Modal>
 
-
-      {recipes.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '2rem' }}>
-          <Empty description="No recipes found" />
-        </div>
+      {Object.keys(groupedRecipes).length === 0 ? (
+        <Empty description="No recipes found" />
       ) : (
-        <Row gutter={16}>
-          {recipes.map(recipe => (
-            <Col span={8} key={recipe.id}>
-              <Link href={`/recipesDetails/${recipe.id}`}>
-                <Card
-                  hoverable
-                  cover={<img alt={recipe.recipe_name} src="https://via.placeholder.com/300" />} // Placeholder image
-                  style={{ marginBottom: '1rem' }}
-                >
-                  <Card.Meta
-                    title={recipe.name}
-                    description={
-                      <Text style={{ color: '#797FE7', textDecoration: 'underline' }}>View Details</Text>
-                    }
-                  />
-                </Card>
-              </Link>
-            </Col>
+        <div>
+          {Object.keys(groupedRecipes).map(date => (
+            <div key={date}>
+              <Text style={{ fontWeight: 'bold', marginBottom: '1rem' }}>{date}</Text>
+              <Row gutter={16}>
+                {groupedRecipes[date].map((recipe: Recipe) => (
+                  <Col span={8} key={recipe.id}>
+                    <Link href={`/recipesDetails/${recipe.id}`}>
+                      <Card hoverable style={{ marginBottom: '1rem' }}>
+                        <Card.Meta
+                          title={<div style={{ display: 'flex', alignItems: 'center' }}>
+                            <img src="/img/excel.png" alt="Excel Logo" style={{ width: '20px', height: '20px', marginRight: '0.5rem' }} />
+                            {recipe.name}
+                          </div>}
+                        />
+                      </Card>
+                    </Link>
+                  </Col>
+                ))}
+              </Row>
+            </div>
           ))}
-        </Row>
+        </div>
       )}
     </div>
   );

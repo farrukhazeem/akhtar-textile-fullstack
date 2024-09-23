@@ -77,59 +77,57 @@ const Employees = () => {
       </div>
 
       {/* Table */}
-      <div className="mt-8 overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200 rounded-lg">
-          <thead className="bg-gray-50 border border-gray-200 text-gray-500">
-            <tr>
-            <th className="w-1/12 px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">
-  Code
-</th>
-<th className="w-1/4 px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">
-  Basic Info
-</th>
-<th className="w-1/4 px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">
-  Employee Info
-</th>
-<th className="w-1/4 px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">
-  Bank Info
-</th>
-<th className="w-1/6 px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">
-  History
-</th>
+      <div className="mt-8">
+  <table className="min-w-full divide-y divide-gray-200 rounded-lg shadow-lg">
+    <thead className="bg-purple-50 border border-gray-200 text-gray-600">
+      <tr>
+        <th className="w-1/12 px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">
+          Code
+        </th>
+        <th className="w-1/4 px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">
+          Basic Info
+        </th>
+        <th className="w-1/4 px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">
+          Employee Info
+        </th>
+        <th className="w-1/4 px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">
+          Bank Info
+        </th>
+        <th className="w-1/6 px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">
+          History
+        </th>
+      </tr>
+    </thead>
 
-            </tr>
-          </thead>
-
-          <tbody className="bg-white divide-y divide-gray-200">
-            {users.map((user: any) => (
-              <tr key={user.id}>
-                <td className="px-6 py-4 whitespace-nowrap text-[#797FE7] font-medium">{user.code}</td>
-                <td className="px-6 py-4 whitespace-nowrap"><span>Name: </span>
-                <span className='text-[#797FE7] font-medium'>{user.name}</span>
-                <br />
-                  {`CNIC: ${user.cnic}`}<br />
-                  {`Department: ${user.department}`}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {`Designation: ${user.designation}`}<br />
-                  {`Phone: ${user.phone}`}<br />
-                  {`Manager: ${user.manager}`}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {`Bank Name: ${user.bank}`}<br />
-                  {`Account#: ${user.account}`}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                Creator: <span className=' text-[#797FE7] font-medium'>{user.createdBy}</span>
-            <br/>
-            Modifier: <span className='text-grey font-medium'>{user.updatedBy==null?'( )':user.updatedBy}</span>
-
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+    <tbody className="bg-white divide-y divide-gray-200">
+      {users.map((user: any) => (
+        <tr key={user.id} className="hover:bg-purple-50 transition duration-200">
+          <td className="px-6 py-4 whitespace-nowrap text-[#797FE7] font-medium">{user.code}</td>
+          <td className="px-6 py-4 whitespace-nowrap">
+            <span className="font-semibold">Name:</span> <span className='text-[#797FE7] font-medium'>{user.name}</span>
+            <br />
+            {`CNIC: ${user.cnic}`}<br />
+            {`Department: ${user.department}`}
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap">
+            {`Designation: ${user.designation}`}<br />
+            {`Phone: ${user.phone}`}<br />
+            {`Manager: ${user.manager}`}
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap">
+            {`Bank Name: ${user.bank}`}<br />
+            {`Account#: ${user.account}`}
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap">
+            <span className="font-semibold">Creator:</span> <span className=' text-[#797FE7] font-medium'>{user.createdBy}</span>
+            <br />
+            <span className="font-semibold">Modifier:</span> <span className='text-gray-500 font-medium'>{user.updatedBy == null ? '( )' : user.updatedBy}</span>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
 
       {/* Modal */}
       <Modal

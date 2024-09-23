@@ -32,7 +32,7 @@
 //       { header: 'Recipe Number', key: 'recipe_number' },
 //       { header: 'FNO', key: 'fno' },
 //       { header: 'Fabric', key: 'fabric' },
-//       { header: 'Wash', key: 'finish' },
+//       { header: 'Wash', key: 'wash' },
 //       { header: 'Active Flag', key: 'active_flag' },
 //       { header: 'Load Size', key: 'load_size' },
 //       { header: 'Action', key: 'action' },
@@ -53,16 +53,10 @@
 
 //     // Set the header row
 //     const headerRow = worksheet.getRow(1);
-//     headerRow.values = [
-//       'Recipe Number', 'FNO', 'Fabric', 'Wash', 'Active Flag', 'Load Size',
-//       'Action', 'Liters', 'RPM', 'Centigrade', 'PH', 'TDS', 'TSS',
-//       'Minutes', 'Step No', 'Chemical Name', 'Dosage %', 'Dosage', 'Total Weight', 'Concatenate'
-//     ];
 //     headerRow.font = { bold: true };
 //     headerRow.alignment = { horizontal: 'center', vertical: 'middle' };
-
 //     headerRow.eachCell({ includeEmpty: true }, (cell, colNumber) => {
-//       if (colNumber <= 6) { 
+//       if (colNumber <= 6) {
 //         cell.fill = {
 //           type: 'pattern',
 //           pattern: 'solid',
@@ -89,12 +83,15 @@
 //       }
 //     });
 
-//     recipes.forEach((recipe) => {
-//       // Filter steps related to the current recipe
+//     // Set to track existing rows to avoid duplicates
+//     const rowSet = new Set();
+
+//     recipes.forEach((recipe, recipeIndex) => {
 //       const recipeSteps = steps.filter(step => step.recipesid === recipe.id);
-      
-//       recipeSteps.forEach((step) => {
-//         // Get chemicals associated with the step
+    
+//       let firstStepRow = worksheet.lastRow ? worksheet.lastRow.number + 1 : 1;
+    
+//       recipeSteps.forEach((step, stepIndex) => {
 //         const stepChemicals = chemicalsAssociation
 //           .filter(assoc => assoc.stepid === step.id)
 //           .map(assoc => {
@@ -106,78 +103,86 @@
 //             };
 //           });
     
-//         // Repeat FNO, Fabric, Wash, Active Flag, Load Size, and step details for each chemical
-//         stepChemicals.forEach((chemical) => {
-//           worksheet.addRow({
-//             recipe_number: recipe.recipe_number,
-//             fno: recipe.fno,
-//             fabric: recipe.fabric,
-//             wash: recipe.wash,
-//             active_flag: recipe.active_flag,
-//             load_size: recipe.load_size,
-//             action: step.action,
-//             liters: step.liters,
-//             rpm: step.rpm,
-//             centigrade: step.centigrade,
-//             ph: step.ph,
-//             tds: step.tds,
-//             tss: step.tss,
-//             minutes: step.minutes,
-//             step_no: step.step_no,
-//             chemical_name: chemical.chemical_name,
-//             dosage_percent: chemical.dosage_percent,
-//             dosage: chemical.dosage,
-//           });
+//         stepChemicals.forEach((chemical, chemicalIndex) => {
+//           const rowKey = `${recipeIndex}-${stepIndex}-${chemicalIndex}-${recipe.recipe || recipe.id}-${step.step_no}-${chemical.chemical_name}`;
+    
+//           if (!rowSet.has(rowKey)) {
+//             worksheet.addRow({
+//               recipe_number: recipe.recipe,
+//               fno: recipe.fno,
+//               fabric: recipe.fabric,
+//               wash: recipe.finish,  // Correctly using 'finish' for wash
+//               active_flag: 'Y',     // Default value
+//               load_size: recipe.load_size,
+//               action: step.action,
+//               liters: step.liters,
+//               rpm: step.rpm,
+//               centigrade: step.centigrade,
+//               ph: step.ph,
+//               tds: step.tds,
+//               tss: step.tss,
+//               minutes: step.minutes,
+//               step_no: step.step_no,
+//               chemical_name: chemical.chemical_name,
+//               dosage_percent: chemical.dosage_percent,
+//               dosage: chemical.dosage,
+//             });
+//             rowSet.add(rowKey);
+//           }
 //         });
     
-//         // If no chemicals are associated, still repeat FNO, Fabric, Wash, Active Flag, and Load Size
 //         if (stepChemicals.length === 0) {
-//           worksheet.addRow({
-//             recipe_number: recipe.recipe_number,
-//             fno: recipe.fno,
-//             fabric: recipe.fabric,
-//             wash: recipe.wash,
-//             active_flag: recipe.active_flag,
-//             load_size: recipe.load_size,
-//             action: step.action,
-//             liters: step.liters,
-//             rpm: step.rpm,
-//             centigrade: step.centigrade,
-//             ph: step.ph,
-//             tds: step.tds,
-//             tss: step.tss,
-//             minutes: step.minutes,
-//             step_no: step.step_no,
-//           });
+//           const rowKey = `${recipeIndex}-${stepIndex}-${recipe.recipe || recipe.id}-${step.step_no}`;
+//           if (!rowSet.has(rowKey)) {
+//             worksheet.addRow({
+//               recipe_number: recipe.recipe,
+//               fno: recipe.fno,
+//               fabric: recipe.fabric,
+//               wash: recipe.finish,  // Correctly using 'finish' for wash
+//               active_flag: 'Y',     // Default value
+//               load_size: recipe.load_size,
+//               action: step.action,
+//               liters: step.liters,
+//               rpm: step.rpm,
+//               centigrade: step.centigrade,
+//               ph: step.ph,
+//               tds: step.tds,
+//               tss: step.tss,
+//               minutes: step.minutes,
+//               step_no: step.step_no,
+//             });
+//             rowSet.add(rowKey);
+//           }
 //         }
 //       });
     
 //       const lastRow = worksheet.lastRow;
-//       if (lastRow) { // Check if lastRow is defined
-//         for (let col = 1; col <= 20; col++) {
+//       if (lastRow) {
+//         for (let col = 1; col <= 20; col++) { 
 //           const cell = lastRow.getCell(col);
 //           cell.border = {
-//             bottom: { style: 'thick', color: { argb: '000000' } },
+//             bottom: { style: 'thick', color: { argb: '000000' } }, 
 //           };
 //         }
-
-//         // Apply vertical lines to the sections
-//         const sectionColumns = [6, 13, 17, 20];
-//         sectionColumns.forEach(colNum => {
-//           for (let rowNum = lastRow.number - recipeSteps.length + 1; rowNum <= lastRow.number; rowNum++) {
+    
+//         const sectionEndColumns = [6, 13, 17, 20]; 
+    
+//         sectionEndColumns.forEach(colNum => {
+//           for (let rowNum = firstStepRow; rowNum <= lastRow.number; rowNum++) {
 //             const row = worksheet.getRow(rowNum);
 //             const cell = row.getCell(colNum);
 //             cell.border = {
-//               right: { style: 'thick', color: { argb: '000000' } },
+//               right: { style: 'thick', color: { argb: '000000' } }, 
 //             };
 //           }
 //         });
 //       }
-//     });    
+//     });
     
-//     // Ensure the column is defined and has the eachCell method
+    
+
 //     worksheet.columns.forEach(column => {
-//       if (column && typeof column.eachCell === 'function') { // Check if column and method exist
+//       if (column && typeof column.eachCell === 'function') {
 //         let maxLength = 0;
 //         column.eachCell({ includeEmpty: true }, (cell) => {
 //           const columnLength = cell.value ? cell.value.toString().length : 10;
@@ -186,13 +191,6 @@
 //           }
 //         });
 //         column.width = maxLength < 10 ? 10 : maxLength;
-//         column.alignment = { horizontal: 'center', vertical: 'middle' };
-//       }
-//     });
-
-//     // Apply alignment to all columns
-//     worksheet.columns.forEach(column => {
-//       if (column && typeof column.alignment === 'object') { // Check if column and alignment property exist
 //         column.alignment = { horizontal: 'center', vertical: 'middle' };
 //       }
 //     });
@@ -213,7 +211,6 @@
 // }
 
 
-
 import { NextResponse } from 'next/server';
 import { Pool } from 'pg';
 import ExcelJS from 'exceljs';
@@ -225,11 +222,24 @@ const pool = new Pool({
   },
 });
 
-export async function GET() {
+export async function GET(request:any) {
   try {
+    const { searchParams } = new URL(request.url);
+    const startDate = searchParams.get('start_date');
+    const endDate = searchParams.get('end_date');
+    console.log(startDate)
+    console.log(endDate)
     const client = await pool.connect();
+
+    if (!startDate || !endDate) {
+      return new NextResponse('Start date and end date are required', { status: 400 });
+    }    
+    const recipesResult = await client.query(
+      `SELECT * FROM recipes 
+       WHERE created_at >= $1 AND created_at < $2`, 
+       [startDate, new Date(new Date(endDate).setHours(23, 59, 59)).toISOString()]
+    );
     
-    const recipesResult = await client.query('SELECT * FROM recipes');
     const stepsResult = await client.query('SELECT * FROM steps');
     const chemicalsResult = await client.query('SELECT * FROM chemicals');
     const chemicalsAssocResult = await client.query('SELECT * FROM chemical_association');
@@ -267,54 +277,28 @@ export async function GET() {
       { header: 'Concatenate', key: 'concatenate' },
     ];
 
-    // Set the header row
     const headerRow = worksheet.getRow(1);
     headerRow.font = { bold: true };
     headerRow.alignment = { horizontal: 'center', vertical: 'middle' };
     headerRow.eachCell({ includeEmpty: true }, (cell, colNumber) => {
       if (colNumber <= 6) {
-        cell.fill = {
-          type: 'pattern',
-          pattern: 'solid',
-          fgColor: { argb: '7030a0' },
-        };
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '7030a0' } };
       } else if (colNumber <= 13) {
-        cell.fill = {
-          type: 'pattern',
-          pattern: 'solid',
-          fgColor: { argb: 'ffff00' },
-        };
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'ffff00' } };
       } else if (colNumber <= 17) {
-        cell.fill = {
-          type: 'pattern',
-          pattern: 'solid',
-          fgColor: { argb: 'e26b0a' },
-        };
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'e26b0a' } };
       } else {
-        cell.fill = {
-          type: 'pattern',
-          pattern: 'solid',
-          fgColor: { argb: '4f81bd' },
-        };
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '4f81bd' } };
       }
     });
 
-    // Set to track existing rows to avoid duplicates
     const rowSet = new Set();
 
-    recipes.forEach((recipe) => {
+    recipes.forEach((recipe, recipeIndex) => {
       const recipeSteps = steps.filter(step => step.recipesid === recipe.id);
-    
-      // Check if recipe_number exists, else log a warning
-      if (!recipe.recipe) {
-        console.warn(`Recipe number missing for recipe ID: ${recipe.id}`);
-      } else {
-        console.log(`Processing recipe: ${recipe.recipe}`);
-      }
-    
       let firstStepRow = worksheet.lastRow ? worksheet.lastRow.number + 1 : 1;
-    
-      recipeSteps.forEach((step) => {
+
+      recipeSteps.forEach((step, stepIndex) => {
         const stepChemicals = chemicalsAssociation
           .filter(assoc => assoc.stepid === step.id)
           .map(assoc => {
@@ -325,17 +309,17 @@ export async function GET() {
               dosage: assoc.dosage !== null ? assoc.dosage : 'Unknown',
             };
           });
-    
-        stepChemicals.forEach((chemical) => {
-          const rowKey = `${recipe.recipe || recipe.id}-${step.step_no}-${chemical.chemical_name}`;
-    
+
+        stepChemicals.forEach((chemical, chemicalIndex) => {
+          const rowKey = `${recipeIndex}-${stepIndex}-${chemicalIndex}-${recipe.recipe || recipe.id}-${step.step_no}-${chemical.chemical_name}`;
+
           if (!rowSet.has(rowKey)) {
             worksheet.addRow({
               recipe_number: recipe.recipe,
               fno: recipe.fno,
               fabric: recipe.fabric,
-              wash: recipe.finish,  // Correctly using 'finish' for wash
-              active_flag: 'Y',     // Default value
+              wash: recipe.finish,  
+              active_flag: 'Y',     
               load_size: recipe.load_size,
               action: step.action,
               liters: step.liters,
@@ -353,16 +337,16 @@ export async function GET() {
             rowSet.add(rowKey);
           }
         });
-    
+
         if (stepChemicals.length === 0) {
-          const rowKey = `${recipe.recipe || recipe.id}-${step.step_no}`;
+          const rowKey = `${recipeIndex}-${stepIndex}-${recipe.recipe || recipe.id}-${step.step_no}`;
           if (!rowSet.has(rowKey)) {
             worksheet.addRow({
               recipe_number: recipe.recipe,
               fno: recipe.fno,
               fabric: recipe.fabric,
-              wash: recipe.finish,  // Correctly using 'finish' for wash
-              active_flag: 'Y',     // Default value
+              wash: recipe.finish,  
+              active_flag: 'Y',     
               load_size: recipe.load_size,
               action: step.action,
               liters: step.liters,
@@ -378,29 +362,25 @@ export async function GET() {
           }
         }
       });
-    
+
       const lastRow = worksheet.lastRow;
       if (lastRow) {
-        for (let col = 1; col <= 20; col++) {
+        for (let col = 1; col <= 20; col++) { 
           const cell = lastRow.getCell(col);
-          cell.border = {
-            bottom: { style: 'thick', color: { argb: '000000' } },
-          };
+          cell.border = { bottom: { style: 'thick', color: { argb: '000000' } } }; 
         }
-    
-        const sectionColumns = [6, 13, 17, 20];
-        sectionColumns.forEach(colNum => {
+
+        const sectionEndColumns = [6, 13, 17, 20]; 
+
+        sectionEndColumns.forEach(colNum => {
           for (let rowNum = firstStepRow; rowNum <= lastRow.number; rowNum++) {
             const row = worksheet.getRow(rowNum);
             const cell = row.getCell(colNum);
-            cell.border = {
-              right: { style: 'thick', color: { argb: '000000' } },
-            };
+            cell.border = { right: { style: 'thick', color: { argb: '000000' } } }; 
           }
         });
       }
     });
-    
 
     worksheet.columns.forEach(column => {
       if (column && typeof column.eachCell === 'function') {
