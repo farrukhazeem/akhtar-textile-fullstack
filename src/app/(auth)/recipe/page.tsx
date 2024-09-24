@@ -383,7 +383,7 @@ const Recipe = () => {
   return (
     <div style={{ padding: '2rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <Title level={1} style={{ margin: 0 }}>Recipes</Title>
+        <Title level={1} style={{ margin: 0, color: '#6A5ACD' }}>Recipes</Title>
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
           <Input
             placeholder="Search by recipe name"
@@ -393,10 +393,10 @@ const Recipe = () => {
           />
           <input type="date" onChange={(e) => setStartDate(e.target.value)} />
           <input type="date" onChange={(e) => setEndDate(e.target.value)} />
-          <Button type="primary" onClick={handleExport} disabled={uploading}>
+          <Button type="primary" onClick={handleExport} disabled={uploading} style={{ backgroundColor: '#797FE7', borderColor: '#797FE7' }}>
             {isExporting ? <Spin indicator={exportSpinner} /> : 'Export'}
           </Button>
-          <Button type="default" onClick={showModal} disabled={uploading}>
+          <Button type="default" onClick={showModal} disabled={uploading} style={{borderColor: '#797FE7'}}>
             <UploadOutlined /> Upload
           </Button>
         </div>
