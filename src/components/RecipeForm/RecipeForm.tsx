@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Modal, Form, Input, InputNumber, Select, Row, Col, Button, Table } from 'antd';
+import { Modal, Form, Input, InputNumber, Select, Row, Col, Button, Table, Spin } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import UploadData from '@/components/UploadData/uploadData'; 
 import SaveData from '@/components/SaveData/saveData';
 import { usePathname } from 'next/navigation';
+import {LoadingOutlined } from '@ant-design/icons';
 
 const { Option } = Select;
 
@@ -19,6 +20,7 @@ const RecipeForm: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const tableRef = useRef<any>(null);
+  const pageLoadingSpinner = <LoadingOutlined style={{ fontSize: 48, color: '#800080' }} spin />;
 
   interface StepData {
     key: number;
@@ -145,6 +147,7 @@ const RecipeForm: React.FC = () => {
   
         if (response.ok) {
           setRecipe1(data);
+          
           form.setFieldsValue({
             loadSize: data.load_size,
             machineType: data.machine_type,
@@ -179,6 +182,7 @@ const RecipeForm: React.FC = () => {
         setLoading(false);
       }
     };
+    
   
     const id = pathname?.split('/').pop();
     if (id) {
@@ -186,8 +190,15 @@ const RecipeForm: React.FC = () => {
     }
   }, [pathname, form]);
 
-  console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", setTableData)
-  
+
+
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
+          <Spin indicator={pageLoadingSpinner} />
+      </div>
+    );
+  }  
   return (
     <div>
       <Row style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
