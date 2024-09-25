@@ -87,7 +87,7 @@ const Employees = () => {
       {/* Table */}
       <div className="mt-8">
   <table className="min-w-full divide-y divide-gray-200 rounded-lg shadow-lg">
-    <thead className="bg-purple-50 border border-gray-200 text-gray-600">
+    <thead className="bg-[#FAFAFA] border border-gray-200 text-gray-600">
       <tr>
         <th className="w-1/12 px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">
           Code

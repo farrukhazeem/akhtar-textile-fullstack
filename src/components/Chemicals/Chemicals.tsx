@@ -89,7 +89,7 @@ const Chemicals = () => {
       {/* Table */}
 <div className="mt-8">
   <table className="min-w-full divide-y divide-gray-200 rounded-lg shadow-lg">
-  <thead className="bg-purple-50 border border-gray-200 text-gray-600">
+  <thead className="bg-[#FAFAFA] border border-gray-200 text-gray-600">
   <tr>
     <th className="w-1/9 px-4 text-left text-xs text-black">
       Washing Name
