@@ -140,22 +140,22 @@ export default function AppSideMenu() {
       setSelectedKey("2");
     } else if (pathname.startsWith("/recipe")) {
       setSelectedKey("12");
-      setOpenKeys(["3"]);  // Open "Reciepe Menu"
+      setOpenKeys(["3"]);  
     } else if (pathname.startsWith("/recipe")) {
       setSelectedKey("3");
-      setOpenKeys(["3"]);  // Open "Reciepe Menu"
+      setOpenKeys(["3"]);  
     } else if (pathname.startsWith("/upload-recipe")) {
       setSelectedKey("4");
-      setOpenKeys(["3"]);  // Open "Reciepe Menu"
+      setOpenKeys(["3"]);  
     } else if (pathname.startsWith("/setup")) {
       setSelectedKey("5");
-      setOpenKeys(["5"]);  // Open "Setup" submenu
+      setOpenKeys(["5"]);  
     } else if (pathname.startsWith("/employees")) {
       setSelectedKey("10");
-      setOpenKeys(["5"]);  // Open "Setup" submenu
+      setOpenKeys(["5"]);  
     } else if (pathname.startsWith("/chemicals")) {
       setSelectedKey("15");
-      setOpenKeys(["5"]);  // Open "Setup" submenu
+      setOpenKeys(["5"]); 
     }     
     else if (pathname.startsWith("/p-l")) {
       setSelectedKey("6");
