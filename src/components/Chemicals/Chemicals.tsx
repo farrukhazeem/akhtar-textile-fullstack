@@ -1,14 +1,20 @@
 'use client'
 
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Input } from 'antd';
+import { Modal, Button, Input, Spin } from 'antd';
 import ChemicalForm from '@/components/ChemicalForm/ChemicalForm';
+import { LoadingOutlined } from '@ant-design/icons';
+
 
 const Chemicals = () => {
   const [chemicals, setChemicals] = useState<any[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [query, setQuery] = useState("");
   const [originalChemicalList, setOriginalChemicalList] = useState([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const pageLoadingSpinner = <LoadingOutlined style={{ fontSize: 48, color: '#800080' }} spin />;
+
   const keys = ["name"]
   const search = (data:any) => {
     return data.filter((item:any)=>{
@@ -24,6 +30,8 @@ const Chemicals = () => {
   
   const fetchChemicals = async () => {
    try {
+    setLoading(true);
+
       const response = await fetch('/api/getAllChemicals');
       if (!response.ok) {
         throw new Error('Network response was not ok');
@@ -31,7 +39,8 @@ const Chemicals = () => {
       const data = await response.json();
       setChemicals(data.chemicals);
       setOriginalChemicalList(data.chemicals)
-      
+      setLoading(false);
+
       } catch (error) {
       console.error('Failed to fetch chemicals:', error);
     }
@@ -54,6 +63,7 @@ const Chemicals = () => {
       fetchChemicals(); // Refresh the user list
         setIsModalVisible(false); // Close the modal
       };
+      if (loading) return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}><Spin indicator={pageLoadingSpinner} /></div>;
 
   return (
     <div>

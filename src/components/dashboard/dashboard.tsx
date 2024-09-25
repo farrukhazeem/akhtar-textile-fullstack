@@ -1,9 +1,12 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { Form, Input, Select, Row, Col, Button, message,Avatar, Space  } from 'antd';
+import { Form, Input, Spin, Select, Row, Col, Button, message,Avatar, Space  } from 'antd';
 import Graphs from '../Graphs/Graphs';
+import {  LoadingOutlined } from '@ant-design/icons';
 const Dashboard = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const pageLoadingSpinner = <LoadingOutlined style={{ fontSize: 48, color: '#800080' }} spin />;
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -22,7 +25,7 @@ const Dashboard = () => {
   }, []);
 
   if (!isAuthenticated) {
-    return <div>Loading...</div>;
+    return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}><Spin indicator={pageLoadingSpinner} /></div>;
   }
 
   return (

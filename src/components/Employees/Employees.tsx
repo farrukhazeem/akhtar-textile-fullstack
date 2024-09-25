@@ -1,14 +1,19 @@
 'use client'
 
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Input } from 'antd';
+import { Modal, Button, Input , Spin } from 'antd';
 import EmployeeForm from '@/components/EmployeeForm/EmployeeForm';
-
+import { LoadingOutlined } from '@ant-design/icons';
+ 
 const Employees = () => {
   const [users, setUsers] = useState<any[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [query, setQuery] = useState("");
   const [originalEmployeeList, setOriginalEmployeeList] = useState([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const pageLoadingSpinner = <LoadingOutlined style={{ fontSize: 48, color: '#800080' }} spin />;
+
   const keys = ["name"]
   const search = (data:any) => {
     return data.filter((item:any)=>{
@@ -24,6 +29,7 @@ const Employees = () => {
   
   const fetchUsers = async () => {
    try {
+    setLoading(true);
       const response = await fetch('/api/getAllUsers');
       if (!response.ok) {
         throw new Error('Network response was not ok');
@@ -31,6 +37,7 @@ const Employees = () => {
       const data = await response.json();
       setUsers(data.users);
       setOriginalEmployeeList(data.users)
+      setLoading(false);
       
       } catch (error) {
       console.error('Failed to fetch users:', error);
@@ -54,6 +61,7 @@ const Employees = () => {
         fetchUsers(); // Refresh the user list
         setIsModalVisible(false); // Close the modal
       };
+      if (loading) return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}><Spin indicator={pageLoadingSpinner} /></div>;
 
   return (
     <div>
