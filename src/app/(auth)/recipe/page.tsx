@@ -383,7 +383,7 @@ const Recipe = () => {
   return (
     <div style={{ padding: '2rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <Title level={1} style={{ margin: 0, color: '#6A5ACD' }}>Recipes</Title>
+        <Title level={1} style={{ margin: 0}}>Recipes</Title>
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
           <Input
             placeholder="Search by recipe name"
