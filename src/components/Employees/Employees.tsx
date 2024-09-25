@@ -4,15 +4,15 @@ import React, { useState, useEffect } from 'react';
 import { Modal, Button, Input , Spin } from 'antd';
 import EmployeeForm from '@/components/EmployeeForm/EmployeeForm';
 import { LoadingOutlined } from '@ant-design/icons';
- 
+import { FormInstance } from 'antd/lib/form'; // Import FormInstance
+
 const Employees = () => {
   const [users, setUsers] = useState<any[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [query, setQuery] = useState("");
   const [originalEmployeeList, setOriginalEmployeeList] = useState([]);
   const [loading, setLoading] = useState<boolean>(true);
-
-  const pageLoadingSpinner = <LoadingOutlined style={{ fontSize: 48, color: '#800080' }} spin />;
+  const [formRef, setFormRef] = useState<FormInstance | null>(null);  const pageLoadingSpinner = <LoadingOutlined style={{ fontSize: 48, color: '#800080' }} spin />;
 
   const keys = ["name"]
   const search = (data:any) => {
@@ -53,7 +53,12 @@ const Employees = () => {
   };
 
   const handleCancel = () => {
+
+    if (formRef) {
+      formRef.resetFields();
+    }
     setIsModalVisible(false);
+
   };
 
     // Function to handle the form submission success
@@ -114,17 +119,17 @@ const Employees = () => {
           <td className="px-6 py-4 whitespace-nowrap">
             <span className="font-semibold">Name:</span> <span className='text-[#797FE7] font-medium'>{user.name}</span>
             <br />
-            {`CNIC: ${user.cnic}`}<br />
-            {`Department: ${user.department}`}
+            {`CNIC: ${user.cnic ? user.cnic : '-'}`}<br />
+            {`Department: ${user.department ? user.department : '-'}`}
           </td>
           <td className="px-6 py-4 whitespace-nowrap">
-            {`Designation: ${user.designation}`}<br />
-            {`Phone: ${user.phone}`}<br />
-            {`Manager: ${user.manager}`}
+            {`Designation: ${user.designation ? user.designation : '-'}`}<br />
+            {`Phone: ${user.phone ? user.phone : '-'}`}<br />
+            {`Manager: ${user.manager ? user.manager : '-'}`}
           </td>
           <td className="px-6 py-4 whitespace-nowrap">
-            {`Bank Name: ${user.bank}`}<br />
-            {`Account#: ${user.account}`}
+            {`Bank Name: ${user.bank ? user.bank : '-'}`}<br />
+            {`Account#: ${user.account ? user.account : '-'}`}<br />
           </td>
           <td className="px-6 py-4 whitespace-nowrap">
             <span className="font-semibold">Creator:</span> <span className=' text-[#797FE7] font-medium'>{user.createdBy}</span>
@@ -148,7 +153,10 @@ const Employees = () => {
         <h1 className="text-xl font-bold mb-4">Employee Form</h1>
         <hr className="mb-2" />
 
-        <EmployeeForm onSuccess={handleFormSuccess} setIsModalVisible={setIsModalVisible} />
+        <EmployeeForm onSuccess={handleFormSuccess}
+         setIsModalVisible={setIsModalVisible}
+         setFormRef={setFormRef} 
+         />
       </Modal>
     </div>
   );

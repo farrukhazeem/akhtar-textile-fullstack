@@ -1,22 +1,45 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form, Input, Select, Row, Col, Button, message } from 'antd';
-
+import * as yup from 'yup';
 const { Option } = Select;
 
 interface EmployeeFormProps {
   setIsModalVisible: (visible: boolean) => void;
   onSuccess: () => void;
+  setFormRef: (form: any) => void;
 }
 
-const EmployeeForm: React.FC<EmployeeFormProps> = ({ setIsModalVisible,onSuccess }) => {
+const validationSchema = yup.object().shape({
+  name: yup.string().required('Name is required'),
+  username: yup.string().required('Username is required'),
+  password: yup.string().required('Password is required'),
+  code: yup.string().required('Employee Code is required'),
+  phone: yup
+  .string()
+  .length(11, 'Phone # must be exactly 11 digits')
+  .matches(/^\d{11}$/, 'Phone # must be exactly 11 digits'),
+  cnic: yup
+  .string()
+  .length(13, 'CNIC must be exactly 13 digits')
+  .matches(/^\d{13}$/, 'CNIC must be a 13-digit number') // Ensures it only contains digits
+
+});
+
+const EmployeeForm: React.FC<EmployeeFormProps> = ({ setIsModalVisible,onSuccess,setFormRef  }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false); // Loader state
 
+  useEffect(() => {
+    setFormRef(form);
+  }, [form, setFormRef]);
+  
   const onFinish = async (values: any) => {
     setLoading(true); // Start loading
     try {
+      await validationSchema.validate(values, { abortEarly: false });
+
       const response = await fetch('/api/createUser', {
         method: 'POST',
         headers: {
@@ -36,21 +59,35 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({ setIsModalVisible,onSuccess
         const error = await response.json();
         message.error('Employee creation failed. Please try again.');
       }
-    } catch (error) {
-      console.error('Error creating user:', error);
+    } catch (error:any) {
+      if (error.inner) {
+        error.inner.forEach((err: any) => {
+          form.setFields([{ name: err.path, errors: [err.message] }]);
+
+        });
+      }else{
+
       message.error('Error creating employee. Please try again.');
+    }  
+
+ 
     } finally {
       setLoading(false); // Stop loading
     }
   };
-
+  const handleInputChange = (name: string) => {
+    // Clear validation errors for the input field
+    form.setFields([{ name, errors: [] }]);
+  };
   return (
     <Form form={form} layout="vertical" onFinish={onFinish}>
       {/* Your form fields here */}
       <Row gutter={16}>
           <Col xs={24} md={8}>
-            <Form.Item label="Name" name="name">
-              <Input style={{ width: '100%' }} />
+            <Form.Item label="Name*" name="name">
+              <Input style={{ width: '100%' }} 
+               onChange={() => handleInputChange('name')}
+              />
             </Form.Item>
           </Col>
           <Col xs={24} md={8}>
@@ -62,8 +99,10 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({ setIsModalVisible,onSuccess
             </Form.Item>
           </Col>
           <Col xs={24} md={8}>
-            <Form.Item label="User Name" name="username">
-              <Input style={{ width: '100%' }} />
+            <Form.Item label="User Name*" name="username">
+              <Input style={{ width: '100%' }} 
+                onChange={() => handleInputChange('username')}
+              />
             </Form.Item>
           </Col>
         </Row>
@@ -71,7 +110,16 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({ setIsModalVisible,onSuccess
         <Row gutter={16}>
           <Col xs={24} md={8}>
             <Form.Item label="CNIC" name="cnic">
-              <Input style={{ width: '100%' }} />
+              <Input style={{ width: '100%' }} 
+              maxLength={13} 
+              onChange={(e) => {
+                const value = e.target.value;
+                // Clear error if the length is 13
+                if (value.length === 13) {
+                  form.setFields([{ name: 'cnic', errors: [] }]);
+                }
+              }}
+              />
             </Form.Item>
           </Col>
           <Col xs={24} md={8}>
@@ -83,16 +131,21 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({ setIsModalVisible,onSuccess
             </Form.Item>
           </Col>
           <Col xs={24} md={8}>
-            <Form.Item label="Password" name="password">
-              <Input style={{ width: '100%' }} />
+            <Form.Item label="Password*" name="password">
+              <Input.Password type="password" style={{ width: '100%' }}
+               onChange={() => handleInputChange('password')}
+              />
             </Form.Item>
           </Col>
         </Row>
 
         <Row gutter={16}>
           <Col xs={24} md={8}>
-            <Form.Item label="Employee Code" name="code">
-              <Input style={{ width: '100%' }} />
+            <Form.Item label="Employee Code*" name="code">
+              <Input style={{ width: '100%' }}
+              onChange={() => handleInputChange('code')}
+
+              />
             </Form.Item>
           </Col>
           <Col xs={24} md={8}>
@@ -113,7 +166,16 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({ setIsModalVisible,onSuccess
         <Row gutter={16}>
           <Col xs={24} md={8}>
             <Form.Item label="Phone #" name="phone">
-              <Input style={{ width: '100%' }} />
+              <Input style={{ width: '100%' }}
+                maxLength={11} 
+                onChange={(e) => {
+                  const value = e.target.value;
+                  // Clear error if the length is 13
+                  if (value.length === 11) {
+                    form.setFields([{ name: 'phone', errors: [] }]);
+                  }
+                }}
+              />
             </Form.Item>
           </Col>
           <Col xs={24} md={8}>
