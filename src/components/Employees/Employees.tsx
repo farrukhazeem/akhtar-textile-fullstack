@@ -13,6 +13,7 @@ const Employees = () => {
   const [originalEmployeeList, setOriginalEmployeeList] = useState([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [formRef, setFormRef] = useState<FormInstance | null>(null);  const pageLoadingSpinner = <LoadingOutlined style={{ fontSize: 48, color: '#800080' }} spin />;
+  const [isAdminSelected, setIsAdminSelected] = useState<boolean>(false);
 
   const keys = ["name"]
   const search = (data:any) => {
@@ -56,8 +57,11 @@ const Employees = () => {
 
     if (formRef) {
       formRef.resetFields();
+
     }
     setIsModalVisible(false);
+    setIsAdminSelected(false); // Reset the isAdminSelected state
+
 
   };
 
@@ -156,6 +160,8 @@ const Employees = () => {
         <EmployeeForm onSuccess={handleFormSuccess}
          setIsModalVisible={setIsModalVisible}
          setFormRef={setFormRef} 
+         setIsAdminSelected={setIsAdminSelected}
+         isAdminSelected={isAdminSelected}
          />
       </Modal>
     </div>

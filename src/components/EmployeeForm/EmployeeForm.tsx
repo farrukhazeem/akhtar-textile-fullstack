@@ -9,6 +9,9 @@ interface EmployeeFormProps {
   setIsModalVisible: (visible: boolean) => void;
   onSuccess: () => void;
   setFormRef: (form: any) => void;
+  setIsAdminSelected: (value: boolean) => void; 
+  isAdminSelected: boolean;
+
 }
 
 const validationSchema = yup.object().shape({
@@ -27,12 +30,16 @@ const validationSchema = yup.object().shape({
 
 });
 
-const EmployeeForm: React.FC<EmployeeFormProps> = ({ setIsModalVisible,onSuccess,setFormRef  }) => {
+const EmployeeForm: React.FC<EmployeeFormProps> = ({ setIsModalVisible,onSuccess,setFormRef,setIsAdminSelected, isAdminSelected  }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false); // Loader state
 
+  const [selectedAccessLevels, setSelectedAccessLevels] = useState<string[]>([]);
+  // const [isAdminSelected, setIsAdminSelected] = useState<boolean>(false);
+
   useEffect(() => {
     setFormRef(form);
+
   }, [form, setFormRef]);
   
   const onFinish = async (values: any) => {
@@ -51,9 +58,12 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({ setIsModalVisible,onSuccess
       if (response.ok) {
         message.success('Employee created successfully.');
         form.resetFields(); 
+        setSelectedAccessLevels([]);
+      
         onSuccess(); 
         // Optional: Reset form after success
         setIsModalVisible(false);
+        setIsAdminSelected(false);
          // Close modal after success
       } else {
         const error = await response.json();
@@ -79,8 +89,26 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({ setIsModalVisible,onSuccess
     // Clear validation errors for the input field
     form.setFields([{ name, errors: [] }]);
   };
+
+  const handleAccessLevelChange = (value: string[]) => {
+console.log("value",value)
+
+    const isAdminSelected = value.includes("Admin");
+    setIsAdminSelected(isAdminSelected);
+  
+    // If Admin is selected, only allow "Admin" and clear others
+    setSelectedAccessLevels(isAdminSelected ? ["Admin"] : value);
+  };
+
+  const handleValidationClear = (name: string, length: number, value: string) => {
+    if (value.length === length) {
+      form.setFields([{ name, errors: [] }]);
+    }
+  };
+
+
   return (
-    <Form form={form} layout="vertical" onFinish={onFinish}>
+    <Form form={form} layout="vertical" onFinish={onFinish} autoComplete="off">
       {/* Your form fields here */}
       <Row gutter={16}>
           <Col xs={24} md={8}>
@@ -101,6 +129,7 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({ setIsModalVisible,onSuccess
           <Col xs={24} md={8}>
             <Form.Item label="User Name*" name="username">
               <Input style={{ width: '100%' }} 
+         
                 onChange={() => handleInputChange('username')}
               />
             </Form.Item>
@@ -112,13 +141,8 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({ setIsModalVisible,onSuccess
             <Form.Item label="CNIC" name="cnic">
               <Input style={{ width: '100%' }} 
               maxLength={13} 
-              onChange={(e) => {
-                const value = e.target.value;
-                // Clear error if the length is 13
-                if (value.length === 13) {
-                  form.setFields([{ name: 'cnic', errors: [] }]);
-                }
-              }}
+              onChange={(e) => handleValidationClear('cnic', 13, e.target.value)}
+
               />
             </Form.Item>
           </Col>
@@ -133,6 +157,7 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({ setIsModalVisible,onSuccess
           <Col xs={24} md={8}>
             <Form.Item label="Password*" name="password">
               <Input.Password type="password" style={{ width: '100%' }}
+              autoComplete="new-password"
                onChange={() => handleInputChange('password')}
               />
             </Form.Item>
@@ -168,21 +193,27 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({ setIsModalVisible,onSuccess
             <Form.Item label="Phone #" name="phone">
               <Input style={{ width: '100%' }}
                 maxLength={11} 
-                onChange={(e) => {
-                  const value = e.target.value;
-                  // Clear error if the length is 13
-                  if (value.length === 11) {
-                    form.setFields([{ name: 'phone', errors: [] }]);
-                  }
-                }}
+                onChange={(e) => handleValidationClear('phone', 11, e.target.value)}
               />
             </Form.Item>
           </Col>
           <Col xs={24} md={8}>
-            <Form.Item label="Provide Access" name="access">
-              <Select placeholder="Select Access" style={{ width: '100%' }}>
+            <Form.Item label="Provide Access" name="accesslevels" hasFeedback={true} >
+            <Select 
+              style={{ width: "100%" }}
+              placeholder="Provide Access"
+              mode="multiple"
+              onChange={handleAccessLevelChange}
+>
                 <Option value="Admin">Admin</Option>
-                <Option value="User">User</Option>
+                <Option value="Dashboard"  disabled={isAdminSelected} >Dashboard</Option>
+                <Option value="Recipe"  disabled={isAdminSelected}>Recipe</Option>
+                <Option value="Employees" disabled={isAdminSelected}>Employees</Option>
+                <Option value="Chemicals" disabled={isAdminSelected}>Chemicals</Option>
+                <Option value="Privileges" disabled={isAdminSelected}>Privileges</Option>
+                <Option value="P&L" disabled={isAdminSelected}>P&L</Option>
+                <Option value="Damco Data"  disabled={isAdminSelected}>Damco Data</Option>
+                <Option value="Nexus Data"  disabled={isAdminSelected}>Nexus Data</Option>
               </Select>
             </Form.Item>
           </Col>
