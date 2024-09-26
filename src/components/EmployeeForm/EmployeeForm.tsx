@@ -210,7 +210,6 @@ console.log("value",value)
                 <Option value="Recipe"  disabled={isAdminSelected}>Recipe</Option>
                 <Option value="Employees" disabled={isAdminSelected}>Employees</Option>
                 <Option value="Chemicals" disabled={isAdminSelected}>Chemicals</Option>
-                <Option value="Privileges" disabled={isAdminSelected}>Privileges</Option>
                 <Option value="P&L" disabled={isAdminSelected}>P&L</Option>
                 <Option value="Damco Data"  disabled={isAdminSelected}>Damco Data</Option>
                 <Option value="Nexus Data"  disabled={isAdminSelected}>Nexus Data</Option>
