@@ -24,6 +24,51 @@ export default function AppSideMenu() {
   const [selectedKey, setSelectedKey] = useState("1");
   const [openKeys, setOpenKeys] = useState<string[]>([]); 
   const router = useRouter();
+  const [userId, setUserId] = useState<{ id: string} | null>(null); // User state
+  const [accessLevel, setAccessLevel] = useState<string[]>([]);
+
+  // Fetch user information from token
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch("/api/getToken", { method: "GET" });
+
+        if (response.ok) {
+          const data = await response.json();
+          setUserId(data); 
+          const user_Id = data.id;
+          const userDataResponse = await fetch(`/api/getAccessByUserId/${user_Id}`);
+          if (userDataResponse.ok) {
+            const userData = await userDataResponse.json();
+            const access =  userData.map((item: { accesslevels: any; }) => item.accesslevels);
+            console.log("User access:", access);
+            const updatedAccessLevel = [...access, "Logout"];
+            setAccessLevel(updatedAccessLevel);
+       
+          } else {
+            console.error("Failed to fetch user data");
+          }
+
+        } else {
+          console.error("Failed to fetch user:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Failed to fetch user", error);
+      }
+
+
+
+    };
+
+    fetchUser();
+
+
+ 
+
+  }, []);
+
+  console.log("accessLevel",accessLevel)            
+
 
   useEffect(() => {
     if (pathname.startsWith("/dashboard")) {
@@ -37,7 +82,7 @@ export default function AppSideMenu() {
     } else if (pathname.startsWith("/upload-recipe")) {
       setSelectedKey("4");
       setOpenKeys(["3"]);  
-    } else if (pathname.startsWith("/setup")) {
+    } else if (pathname.startsWith("")) {
       setSelectedKey("5");
       setOpenKeys(["5"]);  
     } else if (pathname.startsWith("/employees")) {
@@ -88,6 +133,7 @@ export default function AppSideMenu() {
   };
 
   const menuItems = [
+
     {
       label: <Link href="/dashboard" className="text-black">Dashboard</Link>,
       key: "2",
@@ -118,7 +164,7 @@ export default function AppSideMenu() {
     },
     {
       label: (
-        <Link href="/setup" className="text-black">Setup</Link>
+        <Link href="" className="text-black">Setup</Link>
       ),
       children: [
         {
@@ -135,11 +181,7 @@ export default function AppSideMenu() {
           key: "15",
           icon: <ExperimentOutlined  />,
         },
-        // {
-        //   label: <Link href="/privileges">Privileges</Link>,
-        //   key: "9",
-        //   icon: <SettingOutlined />,
-        // },
+
       ],
       key: "5",
       icon: <BulbOutlined />,
@@ -167,6 +209,41 @@ export default function AppSideMenu() {
     },
   ];
 
+  const getFilteredMenuItems = (accessLevels: string[]) => {
+    const hasAdminAccess = accessLevels.includes("Admin");
+
+    const reconstructedMenuItems = menuItems.reduce((acc, item) => {
+      if (hasAdminAccess) {
+        acc.push(item);
+        return acc;
+      }
+
+      if (item.children) {
+        const accessibleChildren = item.children.filter(child =>
+          accessLevels.includes(child.label.props.children)
+        );
+
+        if (accessibleChildren.length > 0) {
+          acc.push({
+            ...item,
+            children: accessibleChildren,
+          });
+        }
+      } else {
+        if (accessLevels.includes(item.label.props.children)) {
+          acc.push(item);
+        }
+      }
+
+      return acc;
+    }, [] as typeof menuItems);
+
+    return reconstructedMenuItems;
+  };
+
+  const availableMenuItems = getFilteredMenuItems(accessLevel);
+
+
   const onOpenChange = (keys: string[]) => {
     setOpenKeys(keys); // Manage which submenu is open
   };
@@ -174,7 +251,7 @@ export default function AppSideMenu() {
   return (
     <Menu
       mode="inline"
-      items={menuItems.map(item => ({
+      items={availableMenuItems.map(item => ({
         ...item,
         style: item.key === selectedKey[0] ? {color: "#797FE7" } : {}
       }))}
@@ -184,3 +261,4 @@ export default function AppSideMenu() {
     />
   );
 }
+
