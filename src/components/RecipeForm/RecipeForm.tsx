@@ -199,6 +199,7 @@ const RecipeForm: React.FC = () => {
       </div>
     );
   }  
+ 
   return (
     <div>
       <Row style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

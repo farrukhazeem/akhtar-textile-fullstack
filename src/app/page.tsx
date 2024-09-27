@@ -3,8 +3,8 @@ import React,{useEffect,useState} from 'react';
 import "./globals.css";
 import { useForm } from "react-hook-form";
 import { useRouter } from 'next/navigation'; 
-import { message } from 'antd';
-import { LockOutlined, UnlockOutlined,UserOutlined } from '@ant-design/icons';
+import { message,Button } from 'antd';
+import { LockOutlined,UnlockOutlined,UserOutlined } from '@ant-design/icons';
 
 interface LoginProps {
   username: string;
@@ -25,12 +25,15 @@ const Login: React.FC = () => {
     defaultValues,
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [loginError, setLoginError] = useState<string | null>(null); 
   const router = useRouter(); 
- 
+
   const onSubmit = async(values: LoginProps) => {
     try {
+      setLoading(true);
+
       const res = await fetch('/api/login', {
         method: 'POST',
         headers: {
@@ -41,16 +44,15 @@ const Login: React.FC = () => {
           password: values.password,
         }),
       });
-
       const data = await res.json();
-
       if (!res.ok) {
         setLoginError(data.message || 'Failed to login');
         message.error(data.message || 'Login failed. Please try again.'); 
         return;
       }
-
       router.push('/dashboard');
+      setLoading(false);
+
     } catch (error) {
       console.error('Login failed', error);
       setLoginError('Something went wrong. Please try again.');
@@ -109,12 +111,16 @@ const Login: React.FC = () => {
                     </div>
                   </div>
               </div>
-              <button
-                type="submit"
-                className="w-[55%] bg-[#656ED3] rounded-lg text-white mt-[2.5%] text-sm"
-              >
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={loading} // Loader when submitting
+                // disabled={loading} // Disable button while loading
+                // className="w-[55%] bg-[#656ED3] rounded-lg text-white mt-[2.5%] text-sm"
+                className='w-[55%] bg-[#656ED3] rounded-lg text-white mt-[2.5%] text-sm hover:bg-[#4a50a8] customButton'
+                >
                 Login
-              </button>
+              </Button>
             </form>
           </div>
         </div>
