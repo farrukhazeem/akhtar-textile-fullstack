@@ -19,9 +19,7 @@ export async function GET() {
 
     return NextResponse.json({ users: result.rows }, {
       status: 200,
-      headers: {
-        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate', // Disable caching for this API route
-      },
+    
     })
   } catch (error) {
     console.error('Error fetching users:', error)

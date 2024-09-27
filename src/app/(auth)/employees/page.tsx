@@ -1,10 +1,12 @@
 import Employees from "@/components/Employees/Employees";
+import { UseCurrentUrlServerSide } from "@/utils/useCurrentUrlServerSide";
 
-const employees = async () => {
+const employees: React.FC = async () => {
+  const url = UseCurrentUrlServerSide();
   
   const fetchUsers = async () => {
     try {
-      const url = "http://localhost:3000"
+      
        const response = await fetch(`${url}/api/getAllUsers`,{
         cache: 'no-store',
        });
