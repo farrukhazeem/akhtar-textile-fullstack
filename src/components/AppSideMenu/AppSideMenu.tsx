@@ -24,7 +24,7 @@ export default function AppSideMenu() {
   const [selectedKey, setSelectedKey] = useState("1");
   const [openKeys, setOpenKeys] = useState<string[]>([]); 
   const router = useRouter();
-  const [userId, setUserId] = useState<{ id: string} | null>(null); // User state
+  const [userId, setUserId] = useState<{ id: string} | null>(null);
   const [accessLevel, setAccessLevel] = useState<string[]>([]);
 
   // Fetch user information from token
@@ -41,13 +41,10 @@ export default function AppSideMenu() {
           if (userDataResponse.ok) {
             const userData = await userDataResponse.json();
             const access =  userData.map((item: { accesslevels: any; }) => item.accesslevels);
-            console.log("User access:", access);
-            const updatedAccessLevel = [...access, "Logout"];
+            const updatedAccessLevel = [...access,"Dashboard", "Logout"];
             setAccessLevel(updatedAccessLevel);
        
-          } else {
-            console.error("Failed to fetch user data");
-          }
+          } 
 
         } else {
           console.error("Failed to fetch user:", response.statusText);
@@ -67,7 +64,7 @@ export default function AppSideMenu() {
 
   }, []);
 
-  console.log("accessLevel",accessLevel)            
+  // console.log("accessLevel",accessLevel)            
 
 
   useEffect(() => {
@@ -211,6 +208,7 @@ export default function AppSideMenu() {
 
   const getFilteredMenuItems = (accessLevels: string[]) => {
     const hasAdminAccess = accessLevels.includes("Admin");
+    console.log("hasAdminAccess", hasAdminAccess);
 
     const reconstructedMenuItems = menuItems.reduce((acc, item) => {
       if (hasAdminAccess) {

@@ -5,15 +5,40 @@ import { Modal, Button, Input , Spin } from 'antd';
 import EmployeeForm from '@/components/EmployeeForm/EmployeeForm';
 import { LoadingOutlined } from '@ant-design/icons';
 import { FormInstance } from 'antd/lib/form'; // Import FormInstance
+import { useRouter } from 'next/navigation';
 
-const Employees = () => {
+interface User {
+  id: string;                       // Unique identifier
+  created_at: string;              // Timestamp for when the user was created
+  username: string;                 // Username of the user
+  password: string;
+  code: string;                    // Hashed password
+  name: string;                     // Full name of the user
+  department: string | null;        // Department of the user (nullable)
+  designation: string | null;       // Designation of the user (nullable)
+  cnic: string | null;              // CNIC number (nullable)
+  manager: string | null;           // Manager's name or ID (nullable)
+  bank: string | null;              // Bank information (nullable)
+  phone: string | null;             // Phone number (nullable)
+  account: string | null;           // Account information (nullable)
+  createdBy: string | null;         // User ID of the creator (nullable)
+  updatedBy: string | null;         // User ID of the last updater (nullable)
+}
+
+interface EmployeeFormProps {
+userData : User[]
+
+
+}
+const Employees:React.FC<EmployeeFormProps> = ({userData}) => {
   const [users, setUsers] = useState<any[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [query, setQuery] = useState("");
   const [originalEmployeeList, setOriginalEmployeeList] = useState([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [formRef, setFormRef] = useState<FormInstance | null>(null);  const pageLoadingSpinner = <LoadingOutlined style={{ fontSize: 48, color: '#800080' }} spin />;
   const [isAdminSelected, setIsAdminSelected] = useState<boolean>(false);
+  const router = useRouter();
 
   const keys = ["name"]
   const search = (data:any) => {
@@ -28,27 +53,6 @@ const Employees = () => {
 
   },[query, originalEmployeeList])
   
-  const fetchUsers = async () => {
-   try {
-    setLoading(true);
-      const response = await fetch('/api/getAllUsers');
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data = await response.json();
-      setUsers(data.users);
-      setOriginalEmployeeList(data.users)
-      setLoading(false);
-      
-      } catch (error) {
-      console.error('Failed to fetch users:', error);
-    }
-  };
-  
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
   const showModal = () => {
     setIsModalVisible(true);
   };
@@ -67,11 +71,12 @@ const Employees = () => {
 
     // Function to handle the form submission success
     const handleFormSuccess = () => {
-        fetchUsers(); // Refresh the user list
+      router.refresh();
+        // fetchUsers(); // Refresh the user list
         setIsModalVisible(false); // Close the modal
       };
       if (loading) return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}><Spin indicator={pageLoadingSpinner} /></div>;
-
+console.log("userData",userData)
   return (
     <div>
       <div className="flex items-center justify-between">
@@ -117,7 +122,8 @@ const Employees = () => {
     </thead>
 
     <tbody className="bg-white divide-y divide-gray-200">
-      {users.map((user: any) => (
+      {userData.map((user: User ) => (
+
         <tr key={user.id} className="hover:bg-purple-50 transition duration-200">
           <td className="px-6 py-4 whitespace-nowrap text-[#797FE7] font-medium">{user.code}</td>
           <td className="px-6 py-4 whitespace-nowrap">
