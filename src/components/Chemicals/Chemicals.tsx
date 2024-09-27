@@ -1,10 +1,8 @@
-'use client'
-
+'use client';
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Input, Spin } from 'antd';
+import { Modal, Button, Input, Spin, Pagination } from 'antd';
 import ChemicalForm from '@/components/ChemicalForm/ChemicalForm';
 import { LoadingOutlined } from '@ant-design/icons';
-
 
 const Chemicals = () => {
   const [chemicals, setChemicals] = useState<any[]>([]);
@@ -12,36 +10,35 @@ const Chemicals = () => {
   const [query, setQuery] = useState("");
   const [originalChemicalList, setOriginalChemicalList] = useState([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [currentPage, setCurrentPage] = useState(1); // Current page state
+  const [pageSize, setPageSize] = useState(10); // Number of items per page
 
   const pageLoadingSpinner = <LoadingOutlined style={{ fontSize: 48, color: '#800080' }} spin />;
 
-  const keys = ["name"]
+  const keys = ["name"];
   const search = (data:any) => {
-    return data.filter((item:any)=>{
-     return keys.some(key=>item[key].toLowerCase().includes(query.toLowerCase()));
-    })
+    return data.filter((item:any) => {
+      return keys.some(key => item[key].toLowerCase().includes(query.toLowerCase()));
+    });
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     const filteredData = search(originalChemicalList);
-    setChemicals(filteredData)
-
-  },[query, originalChemicalList])
+    setChemicals(filteredData);
+  }, [query, originalChemicalList]);
   
   const fetchChemicals = async () => {
-   try {
-    setLoading(true);
-
+    try {
+      setLoading(true);
       const response = await fetch('/api/getAllChemicals');
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
       const data = await response.json();
       setChemicals(data.chemicals);
-      setOriginalChemicalList(data.chemicals)
+      setOriginalChemicalList(data.chemicals);
       setLoading(false);
-
-      } catch (error) {
+    } catch (error) {
       console.error('Failed to fetch chemicals:', error);
     }
   };
@@ -58,12 +55,19 @@ const Chemicals = () => {
     setIsModalVisible(false);
   };
 
-    // Function to handle the form submission success
-    const handleFormSuccess = () => {
-      fetchChemicals(); // Refresh the user list
-        setIsModalVisible(false); // Close the modal
-      };
-      if (loading) return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}><Spin indicator={pageLoadingSpinner} /></div>;
+  // Function to handle the form submission success
+  const handleFormSuccess = () => {
+    fetchChemicals(); // Refresh the user list
+    setIsModalVisible(false); // Close the modal
+  };
+
+  if (loading) {
+    return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}><Spin indicator={pageLoadingSpinner} /></div>;
+  }
+
+  // Calculate paginated data
+  const paginatedChemicals = chemicals.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const totalItems = chemicals.length;
 
   return (
     <div>
@@ -87,78 +91,53 @@ const Chemicals = () => {
       </div>
 
       {/* Table */}
-<div className="mt-8">
-  <table className="min-w-full divide-y divide-gray-200 rounded-lg shadow-lg">
-  <thead className="bg-[#FAFAFA] border border-gray-200 text-gray-600">
-  <tr>
-    <th className="w-1/9 px-4 text-left text-xs text-black">
-      Washing Name
-    </th>
-    <th className="w-1/9 text-left text-xs text-black">
-      Full Name
-    </th>
-    <th className="w-1/9 text-left text-xs text-black">
-      Cost/KG
-    </th>
-    <th className="w-1/9 py-3 text-left text-xs text-black">
-      KG/Can
-    </th>
-    <th className="w-1/9 py-3 text-left text-xs text-black">
-      Cost/Unit Of Usage
-    </th>
-    <th className="w-1/9 py-3 text-left text-xs text-black ">
-      Cost/UOM
-    </th>
-    <th className="w-1/9 py-3 text-left text-xs text-black">
-      Type & Use
-    </th>
-    <th className="w-1/9 py-3 text-left text-xs text-black">
-      Unit Used
-    </th>
-    <th className="w-1/9 py-3 text-left text-xs text-black">
-      Unit Conversion
-    </th>
-  </tr>
-</thead>
+      <div className="mt-8">
+        <table className="min-w-full divide-y divide-gray-200 rounded-lg shadow-lg">
+          <thead className="bg-[#FAFAFA] border border-gray-200 text-gray-600">
+            <tr>
+              <th className="w-1/9 px-4 text-left text-xs text-black">Washing Name</th>
+              <th className="w-1/9 text-left text-xs text-black">Full Name</th>
+              <th className="w-1/9 text-left text-xs text-black">Cost/KG</th>
+              <th className="w-1/9 py-3 text-left text-xs text-black">KG/Can</th>
+              <th className="w-1/9 py-3 text-left text-xs text-black">Cost/Unit Of Usage</th>
+              <th className="w-1/9 py-3 text-left text-xs text-black">Cost/UOM</th>
+              <th className="w-1/9 py-3 text-left text-xs text-black">Type & Use</th>
+              <th className="w-1/9 py-3 text-left text-xs text-black">Unit Used</th>
+              <th className="w-1/9 py-3 text-left text-xs text-black">Unit Conversion</th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {paginatedChemicals.map((chemical: any) => (
+              <tr key={chemical.id} className="hover:bg-purple-50 transition duration-200">
+                <td className="px-6 py-4"><span className='text-[#797FE7]'>{chemical.name}</span></td>
+                <td className="px-3 py-4"><span className='text-[#797FE7]'>{chemical.full_name}</span></td>
+                <td className="px-3 py-4 text-center"><span className='text-[#797FE7]'>{chemical.cost_per_kg}</span></td>
+                <td className="px-3 py-4 text-center"><span className='text-[#797FE7]'>{chemical.kg_per_can}</span></td>
+                <td className="px-3 py-4 text-center"><span className='text-[#797FE7]'>{chemical.cost_per_unit}</span></td>
+                <td className="px-3 py-4 text-center"><span className='text-[#797FE7]'>{chemical.cost_uom}</span></td>
+                <td className="px-3 py-4"><span className='text-[#797FE7]'>{chemical.type_and_use}</span></td>
+                <td className="px-3 py-4 text-center"><span className='text-[#797FE7]'>{chemical.unit_used}</span></td>
+                <td className="px-3 py-4 text-center"><span className='text-[#797FE7]'>{chemical.unit_conversion}</span></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-
-    <tbody className="bg-white divide-y divide-gray-200">
-      {chemicals.map((chemicals: any) => (
-        <tr key={chemicals.id} className="hover:bg-purple-50 transition duration-200">
-          <td className="px-6 py-4">
-            <span className='text-[#797FE7] '>{chemicals.name}</span>
-          </td>
-          <td className="px-3 py-4 ">
-            <span className='text-[#797FE7] '>{chemicals.full_name}</span>
-          </td>
-          <td className="px-3 py-4  text-center">
-            <span className='text-[#797FE7] '>{chemicals.cost_per_kg}</span>
-          </td>
-          <td className="px-3 py-4  text-center">
-            <span className='text-[#797FE7] '>{chemicals.kg_per_can}</span>
-          </td>
-          <td className="px-3 py-4  text-center">
-            <span className='text-[#797FE7] '>{chemicals.cost_per_unit}</span>
-          </td>
-          <td className="px-3 py-4  text-center">
-            <span className='text-[#797FE7] '>{chemicals.cost_uom}</span>
-          </td>
-          <td className="px-3 py-4 ">
-            <span className='text-[#797FE7] '>{chemicals.type_and_use}</span>
-          </td>
-          <td className="px-3 py-4  text-center">
-            <span className='text-[#797FE7] '>{chemicals.unit_used}</span>
-          </td>
-          <td className="px-3 py-4  text-center">
-            <span className='text-[#797FE7] '>{chemicals.unit_conversion}</span>
-          </td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-</div>
-
-
+      {/* Pagination */}
+      <div className="mt-4">
+        <Pagination
+          current={currentPage}
+          pageSize={pageSize}
+          total={totalItems}
+          onChange={(page, pageSize) => {
+            setCurrentPage(page);
+            setPageSize(pageSize);
+          }}
+          showSizeChanger
+          pageSizeOptions={[5, 10, 20, 50]}
+        />
+      </div>
 
       {/* Modal */}
       <Modal
@@ -170,7 +149,6 @@ const Chemicals = () => {
       >
         <h1 className="text-xl font-bold mb-4">Chemical Form</h1>
         <hr className="mb-2" />
-
         <ChemicalForm onSuccess={handleFormSuccess} setIsModalVisible={setIsModalVisible} />
       </Modal>
     </div>
