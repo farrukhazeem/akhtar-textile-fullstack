@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 export const dynamic = 'force-dynamic';
 
 // Secret key for JWT (use environment variable for better security)
-const JWT_SECRET = process.env.JWT_SECRET || "qwertyuiopasdfghjklzxcvbnmqwertyuiopasdfghjklzxcvbnm";
+const JWT_SECRET = process.env.NEXT_PUBLIC_JWT_SECRET || "";
 
 // Function to get the user details (id) from the JWT token
 export function GET(request: NextRequest) {
