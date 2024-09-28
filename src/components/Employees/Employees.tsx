@@ -27,9 +27,8 @@ interface User {
 
 interface EmployeeFormProps {
 userData : User[]
-
-
 }
+
 const Employees:React.FC<EmployeeFormProps> = ({userData}) => {
   const [users, setUsers] = useState<any[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
