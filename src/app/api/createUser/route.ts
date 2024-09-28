@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs';
 
 // Set up the connection pool for PostgreSQL
 const pool = new Pool({
-  connectionString: "postgres://akhtar11:9T0NMeQlomBAVtZ4_Q9RlA@grim-oribi-16146.8nj.gcp-europe-west1.cockroachlabs.cloud:26257/dev_db?sslmode=require"
+  connectionString: process.env.NEXT_PUBLIC_DATABASE_URL
 });
 
 export async function POST(request: Request) {
