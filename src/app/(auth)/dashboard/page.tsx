@@ -1,7 +1,11 @@
+import Dashboard from "@/components/dashboard/dashboard";
+
+
 const dashboard = () => {
+  
   return (
     <div>
-      <h1>Dashboard Component</h1>
+      <Dashboard/>
     </div>
   );
 };

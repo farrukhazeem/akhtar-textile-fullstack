@@ -2,3 +2,114 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  background-color: #EBEFFF;
+}
+
+.ant-pagination .ant-pagination-item,
+.ant-pagination .ant-pagination-item a {
+  color: #6A5ACD !important;
+}
+
+.ant-pagination .ant-pagination-item-active,
+.ant-pagination .ant-pagination-item-active a {
+  color: #ffffff !important;
+  background-color: #6A5ACD !important;
+  border-color: #6A5ACD !important;
+  border-radius: 5px;
+}
+
+.ant-pagination .ant-pagination-item:hover,
+.ant-pagination .ant-pagination-item:hover a {
+  color: #ffffff !important;
+  background-color: #6A5ACD !important;
+  border-color: #6A5ACD !important;
+  border-radius: 5px;
+}
+
+.ant-pagination .ant-pagination-prev,
+.ant-pagination .ant-pagination-next {
+  color: #6A5ACD !important;
+  border: none !important;
+}
+
+.ant-pagination .ant-pagination-prev:hover,
+.ant-pagination .ant-pagination-next:hover {
+  color: #ffffff !important;
+  background-color: #6A5ACD !important;
+}
+
+.ant-pagination .ant-pagination-prev .ant-pagination-item-link,
+.ant-pagination .ant-pagination-next .ant-pagination-item-link {
+  color: #6A5ACD !important;
+}
+
+.ant-pagination .ant-pagination-prev:hover .ant-pagination-item-link,
+.ant-pagination .ant-pagination-next:hover .ant-pagination-item-link {
+  color: #ffffff !important;
+}
+
+.ant-pagination .ant-select-selector {
+  background-color: #ffffff !important;
+  border: 1px solid #6A5ACD !important;
+  color: black !important;
+}
+
+.ant-pagination .ant-select-selector:hover {
+  border-color: #6A5ACD !important;
+}
+
+.ant-pagination .ant-select-item-option {
+  color: black !important;
+}
+
+.ant-pagination .ant-select-item-option:hover {
+  background-color: #6A5ACD !important;
+  color: #ffffff !important;
+}
+
+
+/* Main Menu Styles */
+.ant-menu {
+  background-color: #ffffff !important; /* Set the background color of the menu */
+}
+
+/* Menu Item Styles */
+.ant-menu-item,
+.ant-menu-submenu-title {
+  color: black !important; /* Default text color for menu items */
+}
+
+/* Hover Effect for Menu Items */
+.ant-menu-item:hover,
+.ant-menu-submenu-title:hover {
+  color: #6A5ACD !important; 
+  font-weight: 600;
+}
+
+/* Selected Menu Item Styles */
+.ant-menu-item-selected,
+.ant-menu-submenu-title.ant-menu-submenu-title-selected {
+  color: #6A5ACD !important; 
+  font-weight: 600;
+}
+
+.ant-dropdown-menu {
+  background-color: #ffffff !important; /* Dropdown background color */
+}
+
+/* Dropdown Menu Item Styles */
+.ant-dropdown-menu-item {
+  color: black !important; /* Default color for dropdown items */
+}
+
+/* Hover Effect for Dropdown Items */
+.ant-dropdown-menu-item:hover {
+  background-color: #6A5ACD !important; /* Hover background color for dropdown items */
+  color: #ffffff !important; /* Hover text color for dropdown items */
+}
+
+
+.customButton:hover{
+  background-color: #656ED3 !important;
+}
