@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { Pool } from 'pg';
 
-const pool = new Pool({ connectionString: "postgres://akhtar11:9T0NMeQlomBAVtZ4_Q9RlA@grim-oribi-16146.8nj.gcp-europe-west1.cockroachlabs.cloud:26257/dev_db?sslmode=require" });
+const pool = new Pool({ connectionString: process.env.NEXT_PUBLIC_DATABASE_URL });
 
 export async function GET(req: Request, { params }: { params: { id: string } }) {
   console.log('Received request for ID:', params.id);
