@@ -307,7 +307,7 @@ const { Option } = Select;
 
 const RecipeForm: React.FC = () => {
   const pathname = usePathname();
-  const [chemicalOptions, setChemicalOptions] = useState<string[]>([]);
+  const [chemicalOptions, setChemicalOptions] = useState<{ name: string }[]>([]);
   const [originalChemicalList, setOriginalChemicalList] = useState<string[]>([]);
   const [tableData, setTableData] = useState<StepData[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -568,7 +568,9 @@ const RecipeForm: React.FC = () => {
       <Modal title="Upload Excel" open={isModalOpen} onCancel={handleCancel} footer={null}>
         <UploadData
           setTableData={setTableData}
-          setChemicalOptions={setChemicalOptions} // Update chemical options here
+          setChemicalOptions={(options: string[]) => 
+            setChemicalOptions(options.map(option => ({ name: option })))
+          }
           setIsModalOpen={setIsModalOpen}
           form={form}
           setRecipe1={setRecipe1}
