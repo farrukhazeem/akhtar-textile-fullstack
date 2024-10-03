@@ -26,20 +26,72 @@ const UploadData: React.FC<UploadDataProps> = ({ setTableData, setChemicalOption
       const recipe = response.data.recipes[0];
       console.log(recipe.recipe_no);
       setRecipe1(recipe);
+      // const checkRecipeData = () => {
+      //   if (recipe.step.chemicals.length > 1) {
+      //     return {
+      //       recipe.step.map((step: any, index: number) => ({
+              
+      //       })
 
-      const recipesDataForTable = recipe.step.map((step: any, index: number) => ({
-        key: index,
-        step: step.step_no,
-        action: step.action,
-        minutes: step.minutes,
-        liters: step.litres,
-        rpm: step.rpm,
-        chemicalName: step.chemicals.map((chemical: any) => chemical.recipe_name),
-        percentage: step.chemicals.map((chemical: any) => chemical.percentage),
-        dosage: step.chemicals.map((chemical: any) => chemical.dosage),
-        centigrade: step.temperature,
-      }));
+      //     }
+      //   }
+      // }
+      const recipesDataForTable = () => {
+        let data: any[] = [];
+        recipe.step.forEach((x:any,index:number)=>{
+          let data1={}
 
+            data1 = x.chemicals.map((y:any)=>({
+              key: index,
+              step: x.step_no,
+              action: x.action,
+              minutes: x.minutes,
+              liters: x.litres,
+              rpm: x.rpm,
+              chemicalName:y.recipe_name,
+              percentage: y.percentage,
+              dosage: y.dosage,
+              centigrade: x.temperature,
+            }))
+            console.log(data1)
+            data1.forEach((x:any)=>{
+              data.push(x)
+            })
+        })
+        console.log(data)
+        return data
+          // recipe.step.forEach((chemical: { recipe_name: any, percentage: any, dosage: any }) => {
+            
+        //     recipe.step.map(() => ({
+        //   key: index,
+        // step: step.step_no,
+        // action: step.action,
+        // minutes: step.minutes,
+        // liters: step.litres,
+        // rpm: step.rpm,
+        // // chemicalName:chemical.recipe_name,
+        // // percentage: chemical.percentage,
+        // // dosage: chemical.dosage,
+        // centigrade: step.temperature,
+        // }))
+        console.log(recipe)
+      }
+
+      // const recipesDataForTable = recipe.step.map((step: any, index: number) => ({
+      //   key: index,
+      //   step: step.step_no,
+      //   action: step.action,
+      //   minutes: step.minutes,
+      //   liters: step.litres,
+      //   rpm: step.rpm,
+      //   chemicalName: step.chemicals.map((chemical: any) => chemical.recipe_name),
+      //   percentage: step.chemicals.map((chemical: any) => chemical.percentage),
+      //   dosage: step.chemicals.map((chemical: any) => chemical.dosage),
+      //   centigrade: step.temperature,
+      // }));
+
+  
+      console.log(recipesDataForTable);
       setTableData(recipesDataForTable);
       form.setFieldsValue({
         fileName: recipe.file_name,
