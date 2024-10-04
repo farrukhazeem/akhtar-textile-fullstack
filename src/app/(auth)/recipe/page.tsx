@@ -39,6 +39,7 @@ const Recipe = () => {
 
   // State for success and failure uploads
   const [successUploads, setSuccessUploads] = useState<string[]>([]);
+  const [duplicates, setDuplicates] = useState<string[]>([]);
   const [failedUploads, setFailedUploads] = useState<string[]>([]);
 
   // Pagination states
@@ -77,6 +78,16 @@ const Recipe = () => {
       message.error('Failed to delete recipe');
     }
   };
+  const [files, setFiles] = useState<File[]>([]);
+  const handleFile = async (file: File) => {
+    let temp = await files
+    temp.push(file)
+    setFiles(temp)
+  }
+
+  useEffect(() => {
+    console.log(files)
+  }, [files]);
 
   const handleExport = async () => {
     if (!startDate || !endDate) {
@@ -153,8 +164,10 @@ const Recipe = () => {
   //     setUploading(false);
   //   }
 
-  
+  // const [count, setCount] = useState<number>(0);
+  let count = 0
   const handleUpload = async (files: File[]) => {
+    count++
     const formData = new FormData();
     files.forEach(file => formData.append('files', file)); // Add files to formData
   
@@ -180,35 +193,43 @@ const Recipe = () => {
         const batch = fileDataArray.slice(i, i + batchSize);
   
         try {
-          await axios.post('/api/saveBulkRecipes/', batch, {
+          const reponse = await axios.post('/api/saveBulkRecipes/', batch, {
             headers: { 'Content-Type': 'application/json' },
           });
-  
+          console.log(reponse)
           // Collect successful file names for this batch
           const batchSuccessNames = files.slice(i, i + batchSize).map(file => file.name);
+          duplicates.push(reponse.data.message)
           successNames.push(...batchSuccessNames);
+
         } catch (error) {
           console.error(`Error saving batch starting with ${files[i].name}:`, error);
           const batchFailedNames = files.slice(i, i + batchSize).map(file => file.name);
           failedNames.push(...batchFailedNames);
         }
       }
+
+      duplicates.forEach((duplicate) => {
+      message.error(`Duplicate: ${duplicate}`);
+
+      })
   
       // Step 3: Update success and failure states
       setSuccessUploads(prev => [...prev, ...successNames]);
       setFailedUploads(prev => [...prev, ...failedNames]);
   
-      message.success(`Recipes were saved successfully: ${successNames.join(', ')}`);
+      // message.success(`Recipes were saved successfully: ${successNames.join(', ')}`);
       setIsModalOpen(false);
       fetchRecipes();
     } catch (error) {
       console.error('Error uploading or saving files:', error);
-      message.error('Error uploading or saving files');
+      // message.error('Error uploading or saving files');
     } finally {
       // Show page elements after processing is done
       setShowPageElements(true);
       setUploading(false);
     }
+    console.log(count)
   };
   
 
@@ -247,8 +268,8 @@ const Recipe = () => {
     }
   };
   
-  console.log("success", successUploads)
-  console.log("failed", failedUploads)
+  // console.log("success", successUploads)
+  // console.log("failed", failedUploads)
 
   return (
 
@@ -290,9 +311,12 @@ const Recipe = () => {
           {uploading ? (
             <center><Spin size="large" style={{ textAlign: 'center', padding: '2rem' }} /></center>
           ) : (
-            <Upload beforeUpload={(file) => handleUpload([file])} accept=".xlsx, .xls" multiple>
+            <>
+            <Upload beforeUpload={(file) => handleFile(file)} accept=".xlsx, .xls" multiple>
               <Button icon={<UploadOutlined />}>Click to Upload</Button>
             </Upload>
+              <Button type="primary" onClick={()=>{handleUpload(files)}} style={{ marginTop: '1rem' }}>Confirm</Button>
+            </>
           )}
         </Modal>
 

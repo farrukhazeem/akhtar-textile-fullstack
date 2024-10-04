@@ -92,6 +92,7 @@
 // }
 
 
+import { message } from 'antd';
 import { NextRequest, NextResponse } from 'next/server';
 import { Client } from 'pg';
 
@@ -113,16 +114,31 @@ export async function POST(request: NextRequest) {
   try {
     // Parse the JSON body
     const fullData = await request.json();
-    console.log(fullData);
-
+    // console.log(fullData);
+let duplicates:any[]=[];
     // Check if fullData is an array (multiple recipes) or a single object (one recipe)
     const recipes = Array.isArray(fullData) ? fullData : [fullData];
 
     // Start a transaction
     await client.query('BEGIN');
-
     for (const recipe of recipes) {
-      // Save recipe details to the 'recipes' table
+      //checks is the recipe name already exists
+    const existsResult = await client.query(
+      'SELECT EXISTS (SELECT 1 FROM recipes WHERE Recipe = $1)',
+      [recipe.recipe_no]
+
+      
+  );
+      // Commit the transaction
+      await client.query('COMMIT');
+      // if(existsResult.rows[0].exists){
+      //   return NextResponse.json({ success: false, message: 'Recipe name already exists' }, { status: 400 });
+      // }
+      existsResult.rows[0].exists?duplicates.push(recipe.file_name):null;
+      await client.query('BEGIN');
+      console.log('recipe',existsResult.rows[0].exists);
+if(!existsResult.rows[0].exists){
+        // Save recipe details to the 'recipes' table
       const result = await client.query(
         `INSERT INTO recipes (Load_Size, Machine_Type, Finish, Fabric, Recipe, Fno, name)
          VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
@@ -187,10 +203,15 @@ export async function POST(request: NextRequest) {
       await Promise.all(stepPromises);
     }
 
+    }
+
     // Commit the transaction
     await client.query('COMMIT');
 
-    return NextResponse.json({ success: true });
+    return duplicates.length>0?NextResponse.json({
+       success: false, message: `${duplicates} are duplicates` 
+      }, 
+      { status: 200 }):NextResponse.json({ success: true }, { status: 200 });
 
   } catch (error) {
     console.error('Error saving recipe data:', error);
