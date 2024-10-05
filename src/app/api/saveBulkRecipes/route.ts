@@ -116,12 +116,17 @@ export async function POST(request: NextRequest) {
     const fullData = await request.json();
     // console.log(fullData);
 let duplicates:any[]=[];
+let successful:any[]=[]; 
+let failed:any[]=[];
     // Check if fullData is an array (multiple recipes) or a single object (one recipe)
     const recipes = Array.isArray(fullData) ? fullData : [fullData];
 
-    // Start a transaction
-    await client.query('BEGIN');
+
+
     for (const recipe of recipes) {
+      try{
+          // Start a transaction
+      await client.query('BEGIN');
       //checks is the recipe name already exists
     const existsResult = await client.query(
       'SELECT EXISTS (SELECT 1 FROM recipes WHERE Recipe = $1)',
@@ -134,9 +139,9 @@ let duplicates:any[]=[];
       // if(existsResult.rows[0].exists){
       //   return NextResponse.json({ success: false, message: 'Recipe name already exists' }, { status: 400 });
       // }
-      existsResult.rows[0].exists?duplicates.push(recipe.file_name):null;
+      existsResult.rows[0].exists?duplicates.push(recipe.file_name ):null;
       await client.query('BEGIN');
-      console.log('recipe',existsResult.rows[0].exists);
+      // console.log('recipe',existsResult.rows[0].exists);
 if(!existsResult.rows[0].exists){
         // Save recipe details to the 'recipes' table
       const result = await client.query(
@@ -201,21 +206,24 @@ if(!existsResult.rows[0].exists){
       });
 
       await Promise.all(stepPromises);
-    }
-
-    }
-
-    // Commit the transaction
+      successful.push(recipe.file_name);
+          // Commit the transaction
     await client.query('COMMIT');
+    }
+  }catch (error) {
+    failed.push(recipe.file_name);
+    console.log(failed);
+    console.error('Error saving recipe data:', error);
+    await client.query('ROLLBACK'); // Rollback in case of error
+  }
+    }
 
-    return duplicates.length>0?NextResponse.json({
-       success: false, message: `${duplicates} are duplicates` 
-      }, 
-      { status: 200 }):NextResponse.json({ success: true }, { status: 200 });
+
+// console.log(duplicates);
+    return NextResponse.json({sucess: false, message: {duplicates,successful} },{ status: 200 })
 
   } catch (error) {
     console.error('Error saving recipe data:', error);
-    await client.query('ROLLBACK'); // Rollback in case of error
     return NextResponse.json({ success: false, message: 'Failed to save recipe data' }, { status: 500 });
   } finally {
     await client.end(); // Close the client connection

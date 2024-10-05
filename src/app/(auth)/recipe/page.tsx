@@ -39,9 +39,9 @@ const Recipe = () => {
 
   // State for success and failure uploads
   const [successUploads, setSuccessUploads] = useState<string[]>([]);
-  const [duplicates, setDuplicates] = useState<string[]>([]);
+  // let [duplicates, setDuplicates] = useState<string[]>([]);
   const [failedUploads, setFailedUploads] = useState<string[]>([]);
-
+// let [sucessful,setSuccessful]=useState<string[]>([]);
   // Pagination states
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(18); // Adjust page size here
@@ -164,63 +164,52 @@ const Recipe = () => {
   //     setUploading(false);
   //   }
 
-  // const [count, setCount] = useState<number>(0);
-  let count = 0
-  const handleUpload = async (files: File[]) => {
-    count++
-    const formData = new FormData();
-    files.forEach(file => formData.append('files', file)); // Add files to formData
-  
+  let saveBulkRecipes = async (fileDataArray:any) => {
     try {
-      setUploading(true);
-  
-      // Hide page elements while uploading
-      setShowPageElements(false);
-  
-      // Step 1: Upload files
-      const uploadResponse = await axios.post('https://huge-godiva-arsalan-3b36a0a1.koyeb.app/uploadfile', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-  
-      const fileDataArray = uploadResponse.data.recipes;
-  
-      const successNames: string[] = [];
-      const failedNames: string[] = [];
-  
+    
+      let successNames: string[][] = [];
+      let duplicates: string[][] = [];
       // Step 2: Batch save recipes
       const batchSize = 50; // Set batch size to 50 for optimal performance
-      for (let i = 0; i < fileDataArray.length; i += batchSize) {
-        const batch = fileDataArray.slice(i, i + batchSize);
-  
+      // for (let i = 0; i < fileDataArray.length; i += batchSize) {
+      //   const batch = fileDataArray.slice(i, i + batchSize);
+      // console.log(uploadResponse.data.error);
         try {
-          const reponse = await axios.post('/api/saveBulkRecipes/', batch, {
+          // count++
+         
+          const reponse = await axios.post('/api/saveBulkRecipes/', fileDataArray, {
             headers: { 'Content-Type': 'application/json' },
           });
           console.log(reponse)
           // Collect successful file names for this batch
-          const batchSuccessNames = files.slice(i, i + batchSize).map(file => file.name);
-          duplicates.push(reponse.data.message)
-          successNames.push(...batchSuccessNames);
+          // const batchSuccessNames = files.slice(i, i + batchSize).map(file => file.name);
+          // console.log(reponse.data.message.duplicates)
+duplicates.push(reponse.data.message.duplicates)
+successNames.push(reponse.data.message.successful)
+
+
+          // successNames.push(...batchSuccessNames);
 
         } catch (error) {
-          console.error(`Error saving batch starting with ${files[i].name}:`, error);
-          const batchFailedNames = files.slice(i, i + batchSize).map(file => file.name);
-          failedNames.push(...batchFailedNames);
+          // console.error(`Error saving batch starting with ${files[i].name}:`, error);
+          // const batchFailedNames = files.slice(i, i + batchSize).map(file => file.name);
+          // failedNames.push(...batchFailedNames);
         }
-      }
+      // }
+console.log('duplicates',duplicates)
+console.log('successNames',successNames)
 
-      duplicates.forEach((duplicate) => {
-      message.error(`Duplicate: ${duplicate}`);
-
-      })
-  
+        duplicates[0].length>0?duplicates[0].forEach((x) => {message.error(`${x} is duplicate`)  }):null
+      successNames[0].length>0?successNames[0].forEach((x) => {message.success(`${x} is successfully uploaded`)}):null
       // Step 3: Update success and failure states
-      setSuccessUploads(prev => [...prev, ...successNames]);
-      setFailedUploads(prev => [...prev, ...failedNames]);
-  
+      // setSuccessUploads(prev => [...prev, ...successNames]);
+      // setFailedUploads(prev => [...prev, ...failedNames]);
+      // console.log(duplicates[0].length);
+      successNames = [];
       // message.success(`Recipes were saved successfully: ${successNames.join(', ')}`);
       setIsModalOpen(false);
       fetchRecipes();
+      // duplicates = [];
     } catch (error) {
       console.error('Error uploading or saving files:', error);
       // message.error('Error uploading or saving files');
@@ -229,7 +218,52 @@ const Recipe = () => {
       setShowPageElements(true);
       setUploading(false);
     }
-    console.log(count)
+  }
+
+  let saveFailedUploads = async (fileDataArray:any[]) => {
+    try {
+      console.log('array',fileDataArray)
+      const reponse = await axios.post('/api/saveFailedUploads/', fileDataArray, {
+        headers: { 'Content-Type': 'application/json' },
+      });
+      message.success(reponse.data.message);
+    } catch (error) {
+      console.error('Error uploading or saving files:', error);
+    }
+  }
+
+  // const [count, setCount] = useState<number>(0);
+  // let count = 0
+
+
+  const handleUpload = async (files: File[]) => {
+    
+    const formData = new FormData();
+    files.forEach(file => formData.append('files', file)); // Add files to formData
+    setUploading(true);
+  
+      // Hide page elements while uploading
+      setShowPageElements(false);
+  
+      // Step 1: Upload files
+      const uploadResponse = await axios.post('https://huge-godiva-arsalan-3b36a0a1.koyeb.app/uploadfile', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      // console.log(uploadResponse.data.failed_files);
+      
+      // const fileDataArray = uploadResponse.data.recipes;
+      let failedNames: string[] = [];
+
+      if(uploadResponse.data.failed_files){
+        console.log('failed_files')
+        saveFailedUploads(uploadResponse.data.recipes)
+        // failedNames.push(uploadResponse.data.error)
+        // console.log(failedNames)
+      }else{
+        saveBulkRecipes(uploadResponse.data.recipes)
+      }
+
+    // console.log(count)
   };
   
 
